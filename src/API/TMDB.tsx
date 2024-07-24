@@ -10,7 +10,7 @@ const tmdbAPI = axios.create({
 	},
 });
 
-const getPopularMovies = async (pageNum: number | 1): Promise<any> => {
+const getPopularMovies = async (pageNum: number | 1): Promise<any[]> => {
 	return tmdbAPI
 		.get(`movie/top_rated?language=en-US&page=${pageNum}`)
 		.then((response) => {

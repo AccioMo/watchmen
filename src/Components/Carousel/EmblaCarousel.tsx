@@ -15,6 +15,7 @@ import { getPopularMovies } from "../../API/TMDB";
 import "../../styles/base.css";
 import "../../styles/sandbox.css";
 import "../../styles/embla.css";
+import { createRoot } from "react-dom/client";
 
 type JSONValue =
 	| string
@@ -35,6 +36,7 @@ type PropType = {
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
 	const { options } = props;
+	const updatedSlide = useRef(false);
 	const [slides, setSlides] = useState<JSONValue[]>([]);
 	const [pageNum, setPageNum] = useState(1);
 	const [emblaRef, emblaApi] = useEmblaCarousel(options);
@@ -100,32 +102,65 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 		[]
 	);
 
+	const renderSlide = (movie: any, index: number) => {
+		const imageUrl = `https://image.tmdb.org/t/p/w1280/${movie.backdrop_path}`;
+		return (
+			<div className="embla__slide" key={index}>
+				<img
+					className="embla__slide__img"
+					src={imageUrl}
+					alt={movie.title}
+				/>
+			</div>
+		);
+	};
+
 	const logSlidesInView = useCallback(
-		(emblaApi: EmblaCarouselType, eventName: EmblaEventType) => {
-			console.log(emblaApi.scrollProgress());
-			console.log(pageNum);
-			if (emblaApi.scrollProgress() >= 0.9) {
-				setPageNum(pageNum + 1);
+		(emblaApi: EmblaCarouselType) => {
+			const engine = emblaApi.internalEngine();
+			console.log("pageNum: ", pageNum);
+			console.log("Slides in view:", engine.slidesInView.get());
+			console.log(
+				"Slides length:",
+				Math.round((slides.length - 1) * 0.75)
+			);
+			console.log("Current Slide:", engine.index.get());
+			if (
+				engine.index.get() === Math.round((slides.length - 1) * 0.75) &&
+				updatedSlide.current === false
+			) {
 				getPopularMovies(pageNum)
-					.then((new_slides) => {
-						setSlides([...slides, ...new_slides]);
-						console.log(slides);
-					})
+				.then((new_slides) => {
+					updatedSlide.current = true;
+					console.log("new_slides: ", new_slides);
+					console.log(new_slides.length)
+					new_slides.forEach((new_slide: any, index: number) => {
+						if (index >= (new_slides.length - 1) / 2) return;
+						console.log("replaced: ", index);
+						const slideNode = createRoot(
+							emblaApi.slideNodes()[index]
+						);
+						slideNode.render(renderSlide(new_slide, index));
+					});
+					setPageNum(pageNum + 1);
+				})
 					.catch((error) => {
 						console.error(error);
 					});
 			}
+			updatedSlide.current = false;
 		},
-		[pageNum]
+		[pageNum, slides]
 	);
 
 	useEffect(() => {
 		if (!emblaApi) return;
 		if (!slides || slides.length === 0) {
 			console.log("Fetching movies");
-			getPopularMovies(1)
+			getPopularMovies(pageNum)
 				.then((new_slides) => {
 					setSlides(new_slides);
+					setPageNum(pageNum + 1);
 				})
 				.catch((error) => {
 					console.error(error);
@@ -139,25 +174,16 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 			.on("reInit", tweenOpacity)
 			.on("scroll", tweenOpacity)
 			.on("slideFocus", tweenOpacity);
-		return () => emblaApi.off("slidesInView", logSlidesInView);
+		return () => emblaApi.off("slidesInView", logSlidesInView) as any;
 	}, [emblaApi, tweenOpacity, logSlidesInView]);
 
 	return (
 		<div className="embla">
 			<div className="embla__viewport" ref={emblaRef}>
 				<div className="embla__container">
-					{slides.map((movie: any, index: number) => {
-						const imageUrl = `https://image.tmdb.org/t/p/w1280/${movie.backdrop_path}`;
-						return (
-							<div className="embla__slide" key={index}>
-								<img
-									className="embla__slide__img"
-									src={imageUrl}
-									alt={movie.title}
-								/>
-							</div>
-						);
-					})}
+					{slides.map((movie: any, index: number) =>
+						renderSlide(movie, index)
+					)}
 				</div>
 			</div>
 
