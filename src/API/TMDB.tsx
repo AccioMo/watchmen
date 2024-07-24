@@ -10,9 +10,10 @@ const tmdbAPI = axios.create({
 	},
 });
 
-const getPopularMovies = async (pageNum: number | 1): Promise<any[]> => {
+const getPopularMovies = async (path: string, pageNum: number | 1): Promise<any[]> => {
+	if (pageNum < 1 || path === "") return [];
 	return tmdbAPI
-		.get(`movie/top_rated?language=en-US&page=${pageNum}`)
+		.get(`movie/${path}?language=en-US&page=${pageNum}`)
 		.then((response) => {
 			return response?.data?.results;
 		})

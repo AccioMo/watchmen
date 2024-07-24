@@ -30,12 +30,33 @@ const numberWithinRange = (number: number, min: number, max: number): number =>
 	Math.min(Math.max(number, min), max);
 
 type PropType = {
-	slides: number[];
+	path: string;
 	options?: EmblaOptionsType;
 };
 
+interface SlideProps {
+	movie: any;
+	index: number;
+}
+
+const Slide: React.FC<SlideProps> = ({ movie, index }) => {
+	useEffect(() => {
+		console.log("Movie: ", movie.title);
+	}, [movie]);
+	const imageUrl = `https://image.tmdb.org/t/p/w1280/${movie.backdrop_path}`;
+	return (
+		<div className="embla__slide" key={index}>
+			<img
+				className="embla__slide__img"
+				src={imageUrl}
+				alt={movie.title}
+			/>
+		</div>
+	);
+};
+
 const EmblaCarousel: React.FC<PropType> = (props) => {
-	const { options } = props;
+	const { options, path } = props;
 	const updatedSlide = useRef(false);
 	const [slides, setSlides] = useState<JSONValue[]>([]);
 	const [pageNum, setPageNum] = useState(1);
@@ -102,19 +123,6 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 		[]
 	);
 
-	const renderSlide = (movie: any, index: number) => {
-		const imageUrl = `https://image.tmdb.org/t/p/w1280/${movie.backdrop_path}`;
-		return (
-			<div className="embla__slide" key={index}>
-				<img
-					className="embla__slide__img"
-					src={imageUrl}
-					alt={movie.title}
-				/>
-			</div>
-		);
-	};
-
 	const logSlidesInView = useCallback(
 		(emblaApi: EmblaCarouselType) => {
 			const engine = emblaApi.internalEngine();
@@ -129,21 +137,20 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 				engine.index.get() === Math.round((slides.length - 1) * 0.75) &&
 				updatedSlide.current === false
 			) {
-				getPopularMovies(pageNum)
-				.then((new_slides) => {
-					updatedSlide.current = true;
-					console.log("new_slides: ", new_slides);
-					console.log(new_slides.length)
-					new_slides.forEach((new_slide: any, index: number) => {
-						if (index >= (new_slides.length - 1) / 2) return;
-						console.log("replaced: ", index);
-						const slideNode = createRoot(
-							emblaApi.slideNodes()[index]
-						);
-						slideNode.render(renderSlide(new_slide, index));
-					});
-					setPageNum(pageNum + 1);
-				})
+				getPopularMovies(path, pageNum)
+					.then((nextSlides) => {
+						const nextSlidesLength = nextSlides.length;
+						updatedSlide.current = true;
+						console.log("nextSlides: ", nextSlides);
+						setSlides([
+							...nextSlides.slice(0, nextSlidesLength / 2),
+							...slides.slice(
+								nextSlidesLength / 2,
+								nextSlidesLength
+							),
+						]);
+						setPageNum(pageNum + 1);
+					})
 					.catch((error) => {
 						console.error(error);
 					});
@@ -157,9 +164,9 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 		if (!emblaApi) return;
 		if (!slides || slides.length === 0) {
 			console.log("Fetching movies");
-			getPopularMovies(pageNum)
-				.then((new_slides) => {
-					setSlides(new_slides);
+			getPopularMovies(path, pageNum)
+				.then((nextSlides) => {
+					setSlides(nextSlides);
 					setPageNum(pageNum + 1);
 				})
 				.catch((error) => {
@@ -181,12 +188,11 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 		<div className="embla">
 			<div className="embla__viewport" ref={emblaRef}>
 				<div className="embla__container">
-					{slides.map((movie: any, index: number) =>
-						renderSlide(movie, index)
-					)}
+					{slides.map((movie: any, index: number) => (
+						<Slide movie={movie} index={index} />
+					))}
 				</div>
 			</div>
-
 			<div className="embla__controls">
 				<div className="embla__buttons">
 					<PrevButton

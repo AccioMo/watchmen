@@ -1,9 +1,12 @@
 import iconYou from '../assets/you.svg';
 import iconFind from '../assets/find.svg';
+import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
-function NavBar() {
+const NavBar: React.FC<{ fixed: boolean | false }> = ({ fixed }) => {
+	const nav = useNavigate();
 	return (
-		<div className="py-4 px-8">
+		<div className={`${fixed ? 'fixed top-0 w-full ' : ''}h-[132px] py-4 px-8 z-10`}>
 			<div className="flex h-full w-full justify-between items-center px-4 py-4">
 				<div className="card w-[130px]">
 					<div className="flex justify-center items-center cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-200">
@@ -13,9 +16,9 @@ function NavBar() {
 				</div>
 				<div className="card">
 					<ul className="flex justify-center items-center gap-4 px-8">
-						<li className="text-white px-12 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-200">For Me</li>
-						<li className="text-white px-12 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-200">Popular</li>
-						<li className="text-white px-12 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-200">New</li>
+						<li className="text-white px-12 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-200" onClick={() => nav("/for-me")}>For Me</li>
+						<li className="text-white px-12 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-200" onClick={() => nav("/popular")}>Popular</li>
+						<li className="text-white px-12 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-200" onClick={() => nav("/new")}>New</li>
 					</ul>
 				</div>
 				<div className="card w-[130px]">
