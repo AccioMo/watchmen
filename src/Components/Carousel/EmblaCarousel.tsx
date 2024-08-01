@@ -186,6 +186,10 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 
 	return (
 		<div className="embla">
+			<PrevButton
+				onClick={onPrevButtonClick}
+				disabled={prevBtnDisabled}
+			/>
 			<div className="embla__viewport" ref={emblaRef}>
 				<div className="embla__container">
 					{slides.map((movie: any, index: number) => (
@@ -193,18 +197,10 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 					))}
 				</div>
 			</div>
-			<div className="embla__controls">
-				<div className="embla__buttons">
-					<PrevButton
-						onClick={onPrevButtonClick}
-						disabled={prevBtnDisabled}
-					/>
-					<NextButton
-						onClick={onNextButtonClick}
-						disabled={nextBtnDisabled}
-					/>
-				</div>
-			</div>
+			<NextButton
+				onClick={onNextButtonClick}
+				disabled={nextBtnDisabled}
+			/>
 		</div>
 	);
 };
