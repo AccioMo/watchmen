@@ -10,19 +10,12 @@ import {
 	PrevButton,
 	usePrevNextButtons,
 } from "./EmblaCarouselArrowButtons";
-import { getPopularMovies } from "../../API/TMDB";
+import { getTMDBMovies, getImageURL, JSONValue } from "../../API/TMDB";
 
 import "../../styles/base.css";
 import "../../styles/sandbox.css";
 import "../../styles/embla.css";
 import { createRoot } from "react-dom/client";
-
-type JSONValue =
-	| string
-	| number
-	| boolean
-	| { [x: string]: JSONValue }
-	| Array<JSONValue>;
 
 const TWEEN_FACTOR_BASE = 0.84;
 
@@ -43,7 +36,7 @@ const Slide: React.FC<SlideProps> = ({ movie, index }) => {
 	useEffect(() => {
 		console.log("Movie: ", movie.title);
 	}, [movie]);
-	const imageUrl = `https://image.tmdb.org/t/p/w1280/${movie.backdrop_path}`;
+	const imageUrl = getImageURL(movie.backdrop_path, 1280);
 	return (
 		<div className="embla__slide" key={index}>
 			<img
@@ -137,7 +130,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 				engine.index.get() === Math.round((slides.length - 1) * 0.75) &&
 				updatedSlide.current === false
 			) {
-				getPopularMovies(path, pageNum)
+				getTMDBMovies(path, pageNum)
 					.then((nextSlides) => {
 						const nextSlidesLength = nextSlides.length;
 						updatedSlide.current = true;
@@ -164,7 +157,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 		if (!emblaApi) return;
 		if (!slides || slides.length === 0) {
 			console.log("Fetching movies");
-			getPopularMovies(path, pageNum)
+			getTMDBMovies(path, pageNum)
 				.then((nextSlides) => {
 					setSlides(nextSlides);
 					setPageNum(pageNum + 1);

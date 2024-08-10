@@ -7,7 +7,7 @@ import EmblaCarousel from "../Components/Carousel/EmblaCarousel";
 import { EmblaOptionsType } from "embla-carousel";
 import { useEffect, useState } from "react";
 
-const OPTIONS: EmblaOptionsType = { loop: true };
+const OPTIONS: EmblaOptionsType = { loop: true, dragFree: true };
 const SLIDE_COUNT = 5;
 const SLIDES = Array.from(Array(SLIDE_COUNT).keys());
 

@@ -2,6 +2,13 @@ import axios from "axios";
 
 const TMDB_ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
 
+export type JSONValue =
+	| string
+	| number
+	| boolean
+	| { [x: string]: JSONValue }
+	| Array<JSONValue>;
+
 const tmdbAPI = axios.create({
 	baseURL: "https://api.themoviedb.org/3/",
 	headers: {
@@ -10,7 +17,7 @@ const tmdbAPI = axios.create({
 	},
 });
 
-const getPopularMovies = async (path: string, pageNum: number | 1): Promise<any[]> => {
+const getTMDBMovies = async (path: string, pageNum: number | 1): Promise<JSONValue[]> => {
 	if (pageNum < 1 || path === "") return [];
 	return tmdbAPI
 		.get(`movie/${path}?language=en-US&page=${pageNum}`)
@@ -22,6 +29,10 @@ const getPopularMovies = async (path: string, pageNum: number | 1): Promise<any[
 			return [];
 		});
 };
+
+const getImageURL = (imageID: string, quality: number): string => {
+	return `https://image.tmdb.org/t/p/w${quality.toString()}/${imageID}`;
+}
 
 const getMoviePoster = async (quality: number, path: string) => {
 	axios.get(
@@ -36,4 +47,4 @@ const getMoviePoster = async (quality: number, path: string) => {
 	});
 };
 
-export { tmdbAPI, getPopularMovies, getMoviePoster };
+export { tmdbAPI, getTMDBMovies, getImageURL, getMoviePoster };
