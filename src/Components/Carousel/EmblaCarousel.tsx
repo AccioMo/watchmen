@@ -37,7 +37,21 @@ export const Slide: React.FC<SlideProps> = ({ movie }) => {
 	}, [movie]);
 	const imageUrl = getImageURL(movie.backdrop_path, 1280);
 	return (
-		<img className="embla__slide__img" src={imageUrl} alt={movie.title} />
+		<div className="relative rounded-[56px] overflow-hidden transition-all duration-300">
+			<div className="select-none cursor-pointer h-full w-full border-none bg-gradient-to-r from-black to-transparent opacity-0 hover:opacity-100 top-0 left-0 absolute z-10 transition-all duration-150">
+				<div className="flex items-center p-4 h-full w-1/2">
+					<div className="px-8 w-full max-h-[75%] overflow-hidden text-white">
+						<h2 className="text-2xl font-bold mb-1">{movie.title}</h2>
+						<p className="text-sm py-1">{movie.overview}</p>
+					</div>
+				</div>
+			</div>
+			<img
+				className="object-cover h-full w-full rounded-[60px]"
+				src={imageUrl}
+				alt={movie.title}
+			/>
+		</div>
 	);
 };
 

@@ -34,7 +34,7 @@ function Popular() {
 								<source
 									srcSet={getImageURL(
 										popularMovies[1].backdrop_path,
-										1280
+										"max"
 									)}
 									sizes="100vh"
 									media="(min-width: 1024px)"

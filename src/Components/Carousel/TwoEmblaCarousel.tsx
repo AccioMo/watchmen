@@ -46,7 +46,7 @@ const TwoEmblaCarousel: React.FC<PropType> = (props) => {
 						{slides.map((movie, index) => (
 							<div
 								key={index}
-								className="embla__slide"
+								className="embla__slide z-10"
 								onMouseEnter={autoScroll?.stop}
 								onMouseLeave={() => autoScroll?.play(0)}
 							>

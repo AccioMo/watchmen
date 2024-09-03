@@ -16,6 +16,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --color-primary: #000000;
 }
 
 * {
@@ -41,5 +43,5 @@
 }
 
 .blur-top {
-	box-shadow: 8px 30px 40px rgba(0,0,0,0.8);
+	box-shadow: 8px 16px 16px rgba(0,0,0,0.1);
 }
