@@ -3,26 +3,31 @@ import NavBar from "../Components/NavBar";
 import { LinearBlur } from "../Components/LinearBlur";
 import { getImageURL, getTMDBMovies, JSONValue } from "../API/TMDB";
 import { RatingIMDB, RatingRoTo } from "../Components/Ratings";
+import EmblaCarousel from "../Components/Carousel/EmblaCarousel";
+import TwoEmblaCarousel from "../Components/Carousel/TwoEmblaCarousel";
 
 function Popular() {
 	const [popularMovies, setPopularMovies] = useState<JSONValue[]>([]);
 	useEffect(() => {
-		getTMDBMovies("popular", 1)
+		for (let i = 1; i < 4; i++) {
+			getTMDBMovies("popular", i)
 			.then((response) => {
-				setPopularMovies(response);
+				setPopularMovies([...popularMovies, ...response]);
 			})
 			.catch((error) => {
 				console.error(error);
 			});
+		};
 	}, []);
+	console.log("Popular Movies: ", popularMovies.length);
 	return (
 		<div>
 			<NavBar fixed={true} />
 			<div className="bg-primary">
-				<div className="hiddem h-screen py-4 px-8">
+				<div className="hiddem h-screen py-2 px-3">
 					{popularMovies && popularMovies[1] && (
 						<div
-							className="relative w-full h-full glass-card glass-border overflow-hidden 
+							className="relative w-full h-full glass-card overflow-hidden 
 							before:'' before:absolute before:top-0 before:left-0 before:w-full before:h-24 before:bg-gradient-to-b before:from-black before:to-transparent before:opacity-40"
 						>
 							<picture className="opacity-95 -z-10">
@@ -76,7 +81,19 @@ function Popular() {
 						</div>
 					)}
 				</div>
-				<div className="h-screen"></div>
+				<div className="py-4">
+					<div>
+						<div className="mb-8">
+							<TwoEmblaCarousel slides={[...popularMovies.slice(0, 15)]} direction="forward" options={{ loop: true, dragFree: true }} />
+						</div>
+						<div className="mb-8">
+							<TwoEmblaCarousel slides={[...popularMovies.slice(15, 30)]} direction="backward" options={{ loop: true, dragFree: true }} />
+						</div>
+						<div className="mb-8">
+							<TwoEmblaCarousel slides={[...popularMovies.slice(30, 45)]} direction="forward" options={{ loop: true, dragFree: true }} />
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

@@ -28,12 +28,11 @@
 }
 
 .glass-card {
-	/* display: flex; */
 	backdrop-filter: blur(20px);
 	background-color: rgba(128, 128, 128, 0.125);
-	box-shadow: 0 1.2rem 1.8rem .2rem rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1.2rem 1.8rem .2rem rgba(0, 0, 0, 0.125);
 	padding: 1rem 2rem;
-	border-radius: 1.2rem;
+	border-radius: 56px;
 	height: 100%;
 }
 

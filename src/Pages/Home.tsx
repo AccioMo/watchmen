@@ -16,7 +16,7 @@ function Home() {
 		document.title = "Home";
 	}, []);
 	return (
-		<div className="w-screen h-screen bg-gradient-to-tr from-slate-950 to-violet-950">
+		<div className="w-screen h-screen bg-gradient-to-tr from-slate-950 to-primary">
 			<div className="flex screen flex-col h-full overflow-hidden">
 				<NavBar />
 				<EmblaCarousel options={OPTIONS} path={"top_rated"} />

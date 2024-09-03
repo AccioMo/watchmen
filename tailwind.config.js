@@ -10,7 +10,7 @@ export default {
 				"primary": "#2D1E2F",
 				"glass": "rgba(128, 128, 128, 0.25)",
 				"imdb": "#deb522",
-				"roto": "#a94242",
+				"roto": "#7a2f2f",
 			},
 		},
 	},

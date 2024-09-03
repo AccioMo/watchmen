@@ -29,22 +29,15 @@ type PropType = {
 
 interface SlideProps {
 	movie: any;
-	index: number;
 }
 
-const Slide: React.FC<SlideProps> = ({ movie, index }) => {
+export const Slide: React.FC<SlideProps> = ({ movie }) => {
 	useEffect(() => {
 		console.log("Movie: ", movie.title);
 	}, [movie]);
 	const imageUrl = getImageURL(movie.backdrop_path, 1280);
 	return (
-		<div className="embla__slide" key={index}>
-			<img
-				className="embla__slide__img"
-				src={imageUrl}
-				alt={movie.title}
-			/>
-		</div>
+		<img className="embla__slide__img" src={imageUrl} alt={movie.title} />
 	);
 };
 
