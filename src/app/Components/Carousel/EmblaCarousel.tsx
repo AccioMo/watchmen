@@ -10,12 +10,13 @@ import {
 	PrevButton,
 	usePrevNextButtons,
 } from "./EmblaCarouselArrowButtons";
-import { getTMDBMovies, getImageURL, JSONValue } from "../../API/TMDB";
+import { getTMDBMovies, getImageURL, JSONValue } from "../../../API/TMDB";
 
 import "../../styles/base.css";
 import "../../styles/sandbox.css";
 import "../../styles/embla.css";
 import { createRoot } from "react-dom/client";
+import { useNavigate } from "react-router-dom";
 
 const TWEEN_FACTOR_BASE = 0.84;
 
@@ -35,7 +36,8 @@ export const Slide: React.FC<SlideProps> = ({ movie }) => {
 	useEffect(() => {
 		console.log("Movie: ", movie.title);
 	}, [movie]);
-	const imageUrl = getImageURL(movie.backdrop_path, 1280);
+	const nav = useNavigate();
+	const imageUrl = getImageURL(movie.backdrop_path, 'mid');
 	return (
 		<div className="relative rounded-[56px] overflow-hidden transition-all duration-300">
 			<div className="select-none cursor-pointer h-full w-full border-none bg-gradient-to-r from-black to-transparent opacity-0 hover:opacity-100 top-0 left-0 absolute z-10 transition-all duration-150">
@@ -44,6 +46,9 @@ export const Slide: React.FC<SlideProps> = ({ movie }) => {
 						<h2 className="text-2xl font-bold mb-1">{movie.title}</h2>
 						<p className="text-sm py-1">{movie.overview}</p>
 					</div>
+						<div>
+							<button className="" onClick={() => nav(`/${movie.title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)} >Watch</button>
+						</div>
 				</div>
 			</div>
 			<img

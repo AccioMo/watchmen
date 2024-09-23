@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const TMDB_ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
+const TMDB_ACCESS_TOKEN = process.env.NEXT_TMDB_ACCESS_TOKEN;
 
 export type JSONValue =
 	| string

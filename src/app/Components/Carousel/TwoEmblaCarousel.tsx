@@ -8,7 +8,7 @@ import {
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import { Slide } from "./EmblaCarousel";
-import { JSONValue } from "../../API/TMDB";
+import { JSONValue } from "../../../API/TMDB";
 import { SlidesPlaceholder } from "../SlidesPlaceholder";
 
 type PropType = {

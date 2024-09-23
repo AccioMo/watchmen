@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import NavBar from "../Components/NavBar";
-import { LinearBlur } from "../Components/LinearBlur";
+import NavBar from "../app/Components/NavBar";
+import { LinearBlur } from "../app/Components/LinearBlur";
 import { getImageURL, getTMDBMovies, JSONValue } from "../API/TMDB";
-import { RatingIMDB, RatingRoTo } from "../Components/Ratings";
-import EmblaCarousel from "../Components/Carousel/EmblaCarousel";
-import TwoEmblaCarousel from "../Components/Carousel/TwoEmblaCarousel";
+import { RatingIMDB, RatingRoTo } from "../app/Components/Ratings";
+import EmblaCarousel from "../app/Components/Carousel/EmblaCarousel";
+import TwoEmblaCarousel from "../app/Components/Carousel/TwoEmblaCarousel";
 
 function Popular() {
 	const [popularMovies, setPopularMovies] = useState<JSONValue[]>([]);
