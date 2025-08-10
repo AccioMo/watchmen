@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React from "react";
 import { EmblaOptionsType } from "embla-carousel";
 import {
 	PrevButton,
@@ -6,7 +6,7 @@ import {
 	usePrevNextButtons,
 } from "./EmblaCarouselArrowButtons";
 import useEmblaCarousel from "embla-carousel-react";
-import AutoScroll from "embla-carousel-auto-scroll";
+// import AutoScroll from "embla-carousel-auto-scroll";
 import { Slide } from "./EmblaCarousel";
 import { JSONValue } from "../../../API/TMDB";
 import { SlidesPlaceholder } from "../SlidesPlaceholder";
@@ -18,10 +18,12 @@ type PropType = {
 };
 
 const TwoEmblaCarousel: React.FC<PropType> = (props) => {
-	const { slides, direction, options } = props;
-	const [emblaRef, emblaApi] = useEmblaCarousel(options, [
-		AutoScroll({ playOnInit: slides?.length > 0, direction: direction, speed: 0.75 }),
-	]);
+	const { slides, options } = props;
+	const [emblaRef, emblaApi] = useEmblaCarousel(options);
+	// TODO: Add AutoScroll back when embla-carousel-auto-scroll is installed
+	// const [emblaRef, emblaApi] = useEmblaCarousel(options, [
+	// 	AutoScroll({ playOnInit: slides?.length > 0, direction: direction, speed: 0.75 }),
+	// ]);
 
 	const {
 		prevBtnDisabled,
@@ -30,13 +32,7 @@ const TwoEmblaCarousel: React.FC<PropType> = (props) => {
 		onNextButtonClick,
 	} = usePrevNextButtons(emblaApi);
 
-	//   useEffect(() => {
-	// 	const autoScroll = emblaApi?.plugins()?.autoScroll
-	// 	autoScroll.play;
-	//   }, [])
-
-	const autoScroll = emblaApi?.plugins()?.autoScroll;
-	// if (!autoScroll) return
+	// const autoScroll = emblaApi?.plugins()?.autoScroll;
 
 	return (
 		<section className="embla">
@@ -47,8 +43,8 @@ const TwoEmblaCarousel: React.FC<PropType> = (props) => {
 							<div
 								key={index}
 								className="embla__slide z-10"
-								onMouseEnter={autoScroll?.stop}
-								onMouseLeave={() => autoScroll?.play(0)}
+								// onMouseEnter={autoScroll?.stop}
+								// onMouseLeave={() => autoScroll?.play(0)}
 							>
 								<Slide movie={movie} />
 							</div>

@@ -16,7 +16,7 @@ import "../../styles/base.css";
 import "../../styles/sandbox.css";
 import "../../styles/embla.css";
 import { createRoot } from "react-dom/client";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const TWEEN_FACTOR_BASE = 0.84;
 
@@ -36,26 +36,32 @@ export const Slide: React.FC<SlideProps> = ({ movie }) => {
 	useEffect(() => {
 		console.log("Movie: ", movie.title);
 	}, [movie]);
-	const nav = useNavigate();
+	const router = useRouter();
 	const imageUrl = getImageURL(movie.backdrop_path, 'mid');
 	return (
-		<div className="relative rounded-[56px] overflow-hidden transition-all duration-300">
-			<div className="select-none cursor-pointer h-full w-full border-none bg-gradient-to-r from-black to-transparent opacity-0 hover:opacity-100 top-0 left-0 absolute z-10 transition-all duration-150">
-				<div className="flex items-center p-4 h-full w-1/2">
-					<div className="px-8 w-full max-h-[75%] overflow-hidden text-white">
-						<h2 className="text-2xl font-bold mb-1">{movie.title}</h2>
-						<p className="text-sm py-1">{movie.overview}</p>
-					</div>
-						<div>
-							<button className="" onClick={() => nav(`/${movie.title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)} >Watch</button>
+		<div className="relative rounded-2xl overflow-hidden transition-all duration-300 h-full w-full group shadow-2xl min-h-0">
+			<div className="select-none cursor-pointer h-full w-full border-none bg-gradient-to-r from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 top-0 left-0 absolute z-10 transition-all duration-300">
+				<div className="flex items-center p-6 h-full w-2/3">
+					<div className="px-4 w-full max-h-[75%] overflow-hidden text-white">
+						<h2 className="text-2xl font-bold mb-3 text-white drop-shadow-lg">{movie.title}</h2>
+						<p className="text-sm py-2 text-white/90 leading-relaxed line-clamp-3">{movie.overview}</p>
+						<div className="mt-4">
+							<button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-2 px-5 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg text-sm" 
+								onClick={() => router.push(`/${movie.title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)} >
+								<span className="flex items-center gap-2">
+									▶ Watch Now
+								</span>
+							</button>
 						</div>
+					</div>
 				</div>
 			</div>
 			<img
-				className="object-cover h-full w-full rounded-[60px]"
+				className="object-cover h-full w-full"
 				src={imageUrl}
 				alt={movie.title}
 			/>
+			<div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
 		</div>
 	);
 };
@@ -142,42 +148,48 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 				engine.index.get() === Math.round((slides.length - 1) * 0.75) &&
 				updatedSlide.current === false
 			) {
+				updatedSlide.current = true;
 				getTMDBMovies(path, pageNum)
 					.then((nextSlides) => {
 						const nextSlidesLength = nextSlides.length;
-						updatedSlide.current = true;
 						console.log("nextSlides: ", nextSlides);
-						setSlides([
+						setSlides((prevSlides) => [
 							...nextSlides.slice(0, nextSlidesLength / 2),
-							...slides.slice(
+							...prevSlides.slice(
 								nextSlidesLength / 2,
 								nextSlidesLength
 							),
 						]);
-						setPageNum(pageNum + 1);
+						setPageNum((prevPageNum) => prevPageNum + 1);
+						updatedSlide.current = false;
 					})
 					.catch((error) => {
-						console.error(error);
+						console.error("Error fetching more movies:", error);
+						updatedSlide.current = false;
 					});
 			}
-			updatedSlide.current = false;
 		},
-		[pageNum, slides]
+		[pageNum, slides.length, path]
 	);
 
 	useEffect(() => {
 		if (!emblaApi) return;
-		if (!slides || slides.length === 0) {
-			console.log("Fetching movies");
-			getTMDBMovies(path, pageNum)
-				.then((nextSlides) => {
+		
+		const initializeSlides = async () => {
+			if (!slides || slides.length === 0) {
+				console.log("Fetching movies");
+				try {
+					const nextSlides = await getTMDBMovies(path, pageNum);
 					setSlides(nextSlides);
-					setPageNum(pageNum + 1);
-				})
-				.catch((error) => {
-					console.error(error);
-				});
-		}
+					setPageNum((prevPageNum) => prevPageNum + 1);
+				} catch (error) {
+					console.error("Error fetching initial movies:", error);
+				}
+			}
+		};
+		
+		initializeSlides();
+		
 		emblaApi.on("slidesInView", logSlidesInView);
 		setTweenFactor(emblaApi);
 		tweenOpacity(emblaApi);
@@ -187,7 +199,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 			.on("scroll", tweenOpacity)
 			.on("slideFocus", tweenOpacity);
 		return () => emblaApi.off("slidesInView", logSlidesInView) as any;
-	}, [emblaApi, tweenOpacity, logSlidesInView]);
+	}, [emblaApi, setTweenFactor, tweenOpacity, logSlidesInView, path, pageNum, slides.length]);
 
 	return (
 		<div className="embla">
@@ -198,7 +210,9 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 			<div className="embla__viewport" ref={emblaRef}>
 				<div className="embla__container">
 					{slides.map((movie: any, index: number) => (
-						<Slide movie={movie} index={index} />
+						<div key={index} className="embla__slide">
+							<Slide movie={movie} />
+						</div>
 					))}
 				</div>
 			</div>

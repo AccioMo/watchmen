@@ -7,12 +7,56 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				"primary": "var(--color-primary)",
-				"glass": "rgba(128, 128, 128, 0.25)",
+				"primary": "#0f0f23",
+				"secondary": "#1a1a2e",
+				"accent": "#16213e",
+				"glass": "rgba(255, 255, 255, 0.1)",
+				"glass-border": "rgba(255, 255, 255, 0.15)",
 				"imdb": "#deb522",
-				"roto": "#7a2f2f",
+				"roto": "#ef4444",
 			},
+			animation: {
+				'float': 'float 6s ease-in-out infinite',
+				'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				'blob': 'blob 7s infinite',
+			},
+			keyframes: {
+				float: {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-20px)' },
+				},
+				blob: {
+					'0%': { transform: 'translate(0px, 0px) scale(1)' },
+					'33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+					'66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+					'100%': { transform: 'translate(0px, 0px) scale(1)' },
+				}
+			}
 		},
 	},
-	plugins: [],
+	plugins: [
+		function({ addUtilities }) {
+			const newUtilities = {
+				'.line-clamp-1': {
+					overflow: 'hidden',
+					display: '-webkit-box',
+					'-webkit-box-orient': 'vertical',
+					'-webkit-line-clamp': '1',
+				},
+				'.line-clamp-2': {
+					overflow: 'hidden',
+					display: '-webkit-box',
+					'-webkit-box-orient': 'vertical',
+					'-webkit-line-clamp': '2',
+				},
+				'.line-clamp-3': {
+					overflow: 'hidden',
+					display: '-webkit-box',
+					'-webkit-box-orient': 'vertical',
+					'-webkit-line-clamp': '3',
+				},
+			}
+			addUtilities(newUtilities)
+		}
+	],
 };

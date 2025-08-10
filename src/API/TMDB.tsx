@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const TMDB_ACCESS_TOKEN = process.env.NEXT_TMDB_ACCESS_TOKEN;
+const TMDB_ACCESS_TOKEN = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
 
 export type JSONValue =
 	| string
@@ -22,13 +22,25 @@ const getTMDBMovies = async (
 	pageNum: number | 1
 ): Promise<JSONValue[]> => {
 	if (pageNum < 1 || path === "") return [];
+	
+	if (!TMDB_ACCESS_TOKEN) {
+		console.error("TMDB Access Token is not configured");
+		return [];
+	}
+	
 	return tmdbAPI
 		.get(`movie/${path}?language=en-US&page=${pageNum}`)
 		.then((response) => {
-			return response?.data?.results;
+			return response?.data?.results || [];
 		})
 		.catch((error) => {
-			console.error(error);
+			if (error.response?.status === 401) {
+				console.error("Unauthorized: Check your TMDB API key and access token");
+			} else if (error.response?.status === 429) {
+				console.error("Rate limit exceeded: Too many requests to TMDB API");
+			} else {
+				console.error("Error fetching TMDB movies:", error.message);
+			}
 			return [];
 		});
 };

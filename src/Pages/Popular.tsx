@@ -8,22 +8,36 @@ import TwoEmblaCarousel from "../app/Components/Carousel/TwoEmblaCarousel";
 
 function Popular() {
 	const [popularMovies, setPopularMovies] = useState<JSONValue[]>([]);
+	const [loading, setLoading] = useState(false);
+	
 	useEffect(() => {
-		for (let i = 1; i < 4; i++) {
-			getTMDBMovies("popular", i)
-			.then((response) => {
-				setPopularMovies([...popularMovies, ...response]);
-			})
-			.catch((error) => {
-				console.error(error);
-			});
+		if (loading || popularMovies.length > 0) return;
+		
+		setLoading(true);
+		const fetchMovies = async () => {
+			try {
+				const promises = [];
+				for (let i = 1; i < 4; i++) {
+					promises.push(getTMDBMovies("popular", i));
+				}
+				const results = await Promise.all(promises);
+				const allMovies = results.flat();
+				setPopularMovies(allMovies);
+			} catch (error) {
+				console.error("Error fetching popular movies:", error);
+			} finally {
+				setLoading(false);
+			}
 		};
-	}, []);
+		
+		fetchMovies();
+	}, [loading, popularMovies.length]);
+	
 	console.log("Popular Movies: ", popularMovies.length);
 	return (
-		<div>
+		<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
 			<NavBar fixed={true} />
-			<div className="bg-primary">
+			<div className="bg-gradient-to-b from-transparent to-black/20">
 				<div className="hiddem h-screen py-2 px-3">
 					{popularMovies && popularMovies[1] && (
 						<div
