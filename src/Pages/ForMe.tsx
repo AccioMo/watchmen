@@ -40,7 +40,7 @@ function ForMe() {
 			className={`group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
 				featured ? 'h-80 md:h-96 lg:h-[400px]' : 'h-64 md:h-72 lg:h-80'
 			}`}
-			onClick={() => router.push(`/${movie.title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)}
+			onClick={() => router.push(`/movie/${movie.id}`)}
 		>
 			<img
 				src={getImageURL(movie.backdrop_path, featured ? 'max' : 'mid')}
@@ -99,7 +99,7 @@ function ForMe() {
 										</p>
 										<button 
 											className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg"
-											onClick={() => router.push(`/${(featuredMovie as any).title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)}
+											onClick={() => router.push(`/movie/${(featuredMovie as any).id}`)}
 										>
 											▶ Watch Now
 										</button>
@@ -140,7 +140,7 @@ function ForMe() {
 									src={getImageURL((movie as any).backdrop_path, 'mid')}
 									alt={(movie as any).title}
 									className="w-full h-full object-cover"
-									onClick={() => router.push(`/${(movie as any).title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)}
+									onClick={() => router.push(`/movie/${(movie as any).id}`)}
 								/>
 								<div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
 									<div className="absolute bottom-4 left-4 right-4">
@@ -149,7 +149,7 @@ function ForMe() {
 											<RatingIMDB>{((movie as any).vote_average * 1).toFixed(1)}</RatingIMDB>
 											<button 
 												className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm hover:bg-white/30 transition-all"
-												onClick={() => router.push(`/${(movie as any).title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)}
+												onClick={() => router.push(`/movie/${(movie as any).id}`)}
 											>
 												▶ Watch
 											</button>

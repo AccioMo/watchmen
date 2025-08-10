@@ -47,7 +47,7 @@ export const Slide: React.FC<SlideProps> = ({ movie }) => {
 						<p className="text-sm py-2 text-white/90 leading-relaxed line-clamp-3">{movie.overview}</p>
 						<div className="mt-4">
 							<button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-2 px-5 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg text-sm" 
-								onClick={() => router.push(`/${movie.title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)} >
+								onClick={() => router.push(`/movie/${movie.id}`)} >
 								<span className="flex items-center gap-2">
 									▶ Watch Now
 								</span>

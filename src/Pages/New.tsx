@@ -40,7 +40,7 @@ function New() {
 			className={`group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
 				large ? 'h-80 md:h-96' : 'h-64 md:h-72'
 			}`}
-			onClick={() => router.push(`/${movie.title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)}
+			onClick={() => router.push(`/movie/${movie.id}`)}
 		>
 			<img
 				src={getImageURL(movie.backdrop_path, 'mid')}
@@ -89,7 +89,7 @@ function New() {
 										</p>
 										<button 
 											className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-3 px-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg"
-											onClick={() => router.push(`/${(featuredMovie as any).title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase()}`)}
+											onClick={() => router.push(`/movie/${(featuredMovie as any).id}`)}
 										>
 											▶ Watch Now
 										</button>

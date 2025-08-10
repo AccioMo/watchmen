@@ -85,15 +85,13 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 	}, [query]);
 
 	const handleMovieClick = (movie: any) => {
-		const movieTitle = movie.title.replaceAll(' ', '-').replaceAll(':', '').toLowerCase();
-		
 		// Add to recent searches
 		const newRecentSearches = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
 		setRecentSearches(newRecentSearches);
 		localStorage.setItem("recentSearches", JSON.stringify(newRecentSearches));
 		
 		onClose();
-		router.push(`/${movieTitle}`);
+		router.push(`/movie/${movie.id}`);
 	};
 
 	const handleRecentSearchClick = (searchTerm: string) => {
