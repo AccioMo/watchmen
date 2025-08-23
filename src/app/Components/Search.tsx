@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getImageURL, JSONValue } from "../../API/TMDB";
+import { getImageURL, Movie } from "../../API/TMDB";
 
 interface SearchProps {
 	isOpen: boolean;
@@ -11,7 +11,7 @@ interface SearchProps {
 
 export default function Search({ isOpen, onClose }: SearchProps) {
 	const [query, setQuery] = useState("");
-	const [results, setResults] = useState<JSONValue[]>([]);
+	const [results, setResults] = useState<Movie[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [recentSearches, setRecentSearches] = useState<string[]>([]);
 	const searchRef = useRef<HTMLInputElement>(null);
@@ -84,7 +84,7 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 		return () => clearTimeout(debounceTimer);
 	}, [query]);
 
-	const handleMovieClick = (movie: any) => {
+	const handleMovieClick = (movie: Movie) => {
 		// Add to recent searches
 		const newRecentSearches = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
 		setRecentSearches(newRecentSearches);
@@ -182,7 +182,7 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 									<p className="text-white/60 text-center py-8">No movies found</p>
 								) : (
 									<div className="space-y-3">
-										{results.map((movie: any, index) => (
+										{results.map((movie: Movie, index) => (
 											<div
 												key={index}
 												onClick={() => handleMovieClick(movie)}

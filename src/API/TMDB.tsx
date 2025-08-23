@@ -9,6 +9,23 @@ export type JSONValue =
 	| { [x: string]: JSONValue }
 	| Array<JSONValue>;
 
+export interface Movie {
+	id: number;
+	title: string;
+	overview: string;
+	backdrop_path: string;
+	poster_path: string;
+	release_date: string;
+	vote_average: number;
+	vote_count: number;
+	genre_ids: number[];
+	adult: boolean;
+	original_language: string;
+	original_title: string;
+	popularity: number;
+	video: boolean;
+}
+
 const tmdbAPI = axios.create({
 	baseURL: "https://api.themoviedb.org/3/",
 	headers: {
@@ -20,7 +37,7 @@ const tmdbAPI = axios.create({
 const getTMDBMovies = async (
 	path: string,
 	pageNum: number | 1
-): Promise<JSONValue[]> => {
+): Promise<Movie[]> => {
 	if (pageNum < 1 || path === "") return [];
 	
 	if (!TMDB_ACCESS_TOKEN) {

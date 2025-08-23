@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import NavBar from "../app/Components/NavBar";
-import { getImageURL, getTMDBMovies, JSONValue } from "../API/TMDB";
+import { getImageURL, getTMDBMovies, Movie } from "../API/TMDB";
 import { RatingIMDB } from "../app/Components/Ratings";
 import { useRouter } from "next/navigation";
 
 function ForMe() {
-	const [recommendedMovies, setRecommendedMovies] = useState<JSONValue[]>([]);
-	const [topRatedMovies, setTopRatedMovies] = useState<JSONValue[]>([]);
+	const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+	const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 	
@@ -35,7 +35,7 @@ function ForMe() {
 	
 	const featuredMovie = recommendedMovies[0];
 	
-	const MovieCard = ({ movie, featured = false }: { movie: any, featured?: boolean }) => (
+	const MovieCard = ({ movie, featured = false }: { movie: Movie, featured?: boolean }) => (
 		<div 
 			className={`group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
 				featured ? 'h-80 md:h-96 lg:h-[400px]' : 'h-64 md:h-72 lg:h-80'
@@ -80,7 +80,7 @@ function ForMe() {
 					<div className="mb-12">
 						<div className="relative w-full h-[60vh] min-h-96 glass-card overflow-hidden rounded-3xl">
 							<img
-								src={getImageURL((featuredMovie as any).backdrop_path, "max")}
+								src={getImageURL(featuredMovie.backdrop_path, "max")}
 								alt="Featured Movie"
 								className="w-full h-full object-cover"
 							/>
@@ -89,17 +89,17 @@ function ForMe() {
 									<div className="glass-card glass-border p-6 rounded-2xl">
 										<div className="flex items-center gap-4 mb-4">
 											<span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">FOR YOU</span>
-											<RatingIMDB>{((featuredMovie as any).vote_average * 1).toFixed(1)}</RatingIMDB>
+											<RatingIMDB>{(featuredMovie.vote_average * 1).toFixed(1)}</RatingIMDB>
 										</div>
 										<h1 className="text-4xl font-bold text-white mb-4">
-											{(featuredMovie as any).original_title}
+											{featuredMovie.original_title}
 										</h1>
 										<p className="text-white/90 text-lg leading-relaxed line-clamp-3 mb-6">
-											{(featuredMovie as any).overview}
+											{featuredMovie.overview}
 										</p>
 										<button 
 											className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg"
-											onClick={() => router.push(`/movie/${(featuredMovie as any).id}`)}
+											onClick={() => router.push(`/movie/${featuredMovie.id}`)}
 										>
 											▶ Watch Now
 										</button>
@@ -114,8 +114,8 @@ function ForMe() {
 				<div className="mb-12">
 					<h2 className="text-3xl font-bold text-white mb-6 px-2">Curated for You</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{recommendedMovies.slice(1, 7).filter(movie => movie && (movie as any).backdrop_path).map((movie, index) => (
-							<MovieCard key={index} movie={movie as any} featured={true} />
+						{recommendedMovies.slice(1, 7).filter(movie => movie && movie.backdrop_path).map((movie, index) => (
+							<MovieCard key={index} movie={movie} featured={true} />
 						))}
 					</div>
 				</div>
@@ -124,8 +124,8 @@ function ForMe() {
 				<div className="mb-12">
 					<h2 className="text-3xl font-bold text-white mb-6 px-2">Top Rated Picks</h2>
 					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-						{topRatedMovies.slice(0, 15).filter(movie => movie && (movie as any).backdrop_path).map((movie, index) => (
-							<MovieCard key={index} movie={movie as any} />
+						{topRatedMovies.slice(0, 15).filter(movie => movie && movie.backdrop_path).map((movie, index) => (
+							<MovieCard key={index} movie={movie} />
 						))}
 					</div>
 				</div>
@@ -134,22 +134,22 @@ function ForMe() {
 				<div className="mb-12">
 					<h2 className="text-3xl font-bold text-white mb-6 px-2">Popular Choices</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-						{recommendedMovies.slice(7, 15).filter(movie => movie && (movie as any).backdrop_path).map((movie, index) => (
+						{recommendedMovies.slice(7, 15).filter(movie => movie && movie.backdrop_path).map((movie, index) => (
 							<div key={index} className="group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl h-48 md:h-64">
 								<img
-									src={getImageURL((movie as any).backdrop_path, 'mid')}
-									alt={(movie as any).title}
+									src={getImageURL(movie.backdrop_path, 'mid')}
+									alt={movie.title}
 									className="w-full h-full object-cover"
-									onClick={() => router.push(`/movie/${(movie as any).id}`)}
+									onClick={() => router.push(`/movie/${movie.id}`)}
 								/>
 								<div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
 									<div className="absolute bottom-4 left-4 right-4">
-										<h3 className="text-white font-bold text-xl mb-2">{(movie as any).title}</h3>
+										<h3 className="text-white font-bold text-xl mb-2">{movie.title}</h3>
 										<div className="flex items-center justify-between">
-											<RatingIMDB>{((movie as any).vote_average * 1).toFixed(1)}</RatingIMDB>
+											<RatingIMDB>{(movie.vote_average * 1).toFixed(1)}</RatingIMDB>
 											<button 
 												className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm hover:bg-white/30 transition-all"
-												onClick={() => router.push(`/movie/${(movie as any).id}`)}
+												onClick={() => router.push(`/movie/${movie.id}`)}
 											>
 												▶ Watch
 											</button>
@@ -165,8 +165,8 @@ function ForMe() {
 				<div className="mb-12">
 					<h2 className="text-3xl font-bold text-white mb-6 px-2">More for You</h2>
 					<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-						{recommendedMovies.slice(15, 39).filter(movie => movie && (movie as any).backdrop_path).map((movie, index) => (
-							<MovieCard key={index} movie={movie as any} />
+						{recommendedMovies.slice(15, 39).filter(movie => movie && movie.backdrop_path).map((movie, index) => (
+							<MovieCard key={index} movie={movie} />
 						))}
 					</div>
 				</div>

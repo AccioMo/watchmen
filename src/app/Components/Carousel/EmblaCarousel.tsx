@@ -10,12 +10,11 @@ import {
 	PrevButton,
 	usePrevNextButtons,
 } from "./EmblaCarouselArrowButtons";
-import { getTMDBMovies, getImageURL, JSONValue } from "../../../API/TMDB";
+import { getTMDBMovies, getImageURL, Movie } from "../../../API/TMDB";
 
 import "../../styles/base.css";
 import "../../styles/sandbox.css";
 import "../../styles/embla.css";
-import { createRoot } from "react-dom/client";
 import { useRouter } from "next/navigation";
 
 const TWEEN_FACTOR_BASE = 0.84;
@@ -29,7 +28,7 @@ type PropType = {
 };
 
 interface SlideProps {
-	movie: any;
+	movie: Movie;
 }
 
 export const Slide: React.FC<SlideProps> = ({ movie }) => {
@@ -69,7 +68,7 @@ export const Slide: React.FC<SlideProps> = ({ movie }) => {
 const EmblaCarousel: React.FC<PropType> = (props) => {
 	const { options, path } = props;
 	const updatedSlide = useRef(false);
-	const [slides, setSlides] = useState<JSONValue[]>([]);
+	const [slides, setSlides] = useState<Movie[]>([]);
 	const [pageNum, setPageNum] = useState(1);
 	const [emblaRef, emblaApi] = useEmblaCarousel(options);
 	const tweenFactor = useRef(0);
@@ -198,8 +197,10 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 			.on("reInit", tweenOpacity)
 			.on("scroll", tweenOpacity)
 			.on("slideFocus", tweenOpacity);
-		return () => emblaApi.off("slidesInView", logSlidesInView) as any;
-	}, [emblaApi, setTweenFactor, tweenOpacity, logSlidesInView, path, pageNum, slides.length]);
+		return () => {
+			emblaApi.off("slidesInView", logSlidesInView);
+		};
+	}, [emblaApi, setTweenFactor, tweenOpacity, logSlidesInView, path, pageNum, slides]);
 
 	return (
 		<div className="embla">
@@ -209,7 +210,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 			/>
 			<div className="embla__viewport" ref={emblaRef}>
 				<div className="embla__container">
-					{slides.map((movie: any, index: number) => (
+					{slides.map((movie: Movie, index: number) => (
 						<div key={index} className="embla__slide">
 							<Slide movie={movie} />
 						</div>

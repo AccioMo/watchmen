@@ -2,12 +2,8 @@
 
 import NavBar from "./Components/NavBar";
 import Footer from "./Components/Footer";
-// import { tmdbAPI, getPopularMovies } from "../API/TMDB";
-import { consumetAPI } from "../API/Consumet";
-import axios from "axios";
 import EmblaCarousel from "./Components/Carousel/EmblaCarousel";
 import { EmblaOptionsType } from "embla-carousel";
-import { useEffect, useState } from "react";
 
 const OPTIONS: EmblaOptionsType = { loop: true, dragFree: true };
 

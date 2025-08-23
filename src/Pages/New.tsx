@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import NavBar from "../app/Components/NavBar";
-import { getImageURL, getTMDBMovies, JSONValue } from "../API/TMDB";
+import { getImageURL, getTMDBMovies, Movie } from "../API/TMDB";
 import { RatingIMDB } from "../app/Components/Ratings";
 import { useRouter } from "next/navigation";
 
 function New() {
-	const [nowPlayingMovies, setNowPlayingMovies] = useState<JSONValue[]>([]);
-	const [upcomingMovies, setUpcomingMovies] = useState<JSONValue[]>([]);
+	const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[]>([]);
+	const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 	
@@ -35,7 +35,7 @@ function New() {
 	
 	const featuredMovie = nowPlayingMovies[0];
 	
-	const MovieCard = ({ movie, large = false }: { movie: any, large?: boolean }) => (
+	const MovieCard = ({ movie, large = false }: { movie: Movie, large?: boolean }) => (
 		<div 
 			className={`group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
 				large ? 'h-80 md:h-96' : 'h-64 md:h-72'
@@ -70,7 +70,7 @@ function New() {
 					<div className="mb-12">
 						<div className="relative w-full h-[60vh] min-h-96 glass-card overflow-hidden rounded-3xl">
 							<img
-								src={getImageURL((featuredMovie as any).backdrop_path, "max")}
+								src={getImageURL(featuredMovie.backdrop_path, "max")}
 								alt="Featured New Movie"
 								className="w-full h-full object-cover"
 							/>
@@ -79,17 +79,17 @@ function New() {
 									<div className="glass-card glass-border p-6 rounded-2xl">
 										<div className="flex items-center gap-4 mb-4">
 											<span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">NEW</span>
-											<RatingIMDB>{((featuredMovie as any).vote_average * 1).toFixed(1)}</RatingIMDB>
+											<RatingIMDB>{(featuredMovie.vote_average * 1).toFixed(1)}</RatingIMDB>
 										</div>
 										<h1 className="text-4xl font-bold text-white mb-4">
-											{(featuredMovie as any).original_title}
+											{featuredMovie.original_title}
 										</h1>
 										<p className="text-white/90 text-lg leading-relaxed line-clamp-3 mb-6">
-											{(featuredMovie as any).overview}
+											{featuredMovie.overview}
 										</p>
 										<button 
 											className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-3 px-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg"
-											onClick={() => router.push(`/movie/${(featuredMovie as any).id}`)}
+											onClick={() => router.push(`/movie/${featuredMovie.id}`)}
 										>
 											▶ Watch Now
 										</button>
@@ -104,8 +104,8 @@ function New() {
 				<div className="mb-12">
 					<h2 className="text-3xl font-bold text-white mb-6 px-2">Now Playing</h2>
 					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-						{nowPlayingMovies.slice(1, 21).filter(movie => movie && (movie as any).backdrop_path).map((movie, index) => (
-							<MovieCard key={index} movie={movie as any} />
+						{nowPlayingMovies.slice(1, 21).filter(movie => movie && movie.backdrop_path).map((movie, index) => (
+							<MovieCard key={index} movie={movie} />
 						))}
 					</div>
 				</div>
@@ -114,8 +114,8 @@ function New() {
 				<div className="mb-12">
 					<h2 className="text-3xl font-bold text-white mb-6 px-2">Coming Soon</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-						{upcomingMovies.slice(0, 12).filter(movie => movie && (movie as any).backdrop_path).map((movie, index) => (
-							<MovieCard key={index} movie={movie as any} large={true} />
+						{upcomingMovies.slice(0, 12).filter(movie => movie && movie.backdrop_path).map((movie, index) => (
+							<MovieCard key={index} movie={movie} large={true} />
 						))}
 					</div>
 				</div>
@@ -124,8 +124,8 @@ function New() {
 				<div className="mb-12">
 					<h2 className="text-3xl font-bold text-white mb-6 px-2">Latest Releases</h2>
 					<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-						{nowPlayingMovies.slice(21, 45).filter(movie => movie && (movie as any).backdrop_path).map((movie, index) => (
-							<MovieCard key={index} movie={movie as any} />
+						{nowPlayingMovies.slice(21, 45).filter(movie => movie && movie.backdrop_path).map((movie, index) => (
+							<MovieCard key={index} movie={movie} />
 						))}
 					</div>
 				</div>

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import NavBar from "../app/Components/NavBar";
-import { LinearBlur } from "../app/Components/LinearBlur";
-import { getImageURL, getTMDBMovies, JSONValue } from "../API/TMDB";
+import { getImageURL, getTMDBMovies, Movie } from "../API/TMDB";
 import { RatingIMDB, RatingRoTo } from "../app/Components/Ratings";
-import EmblaCarousel from "../app/Components/Carousel/EmblaCarousel";
 import TwoEmblaCarousel from "../app/Components/Carousel/TwoEmblaCarousel";
 
 function Popular() {
-	const [popularMovies, setPopularMovies] = useState<JSONValue[]>([]);
+	const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
 	const [loading, setLoading] = useState(false);
 	
 	useEffect(() => {
@@ -16,7 +14,7 @@ function Popular() {
 		setLoading(true);
 		const fetchMovies = async () => {
 			try {
-				const promises = [];
+				const promises: Promise<Movie[]>[] = [];
 				for (let i = 1; i < 4; i++) {
 					promises.push(getTMDBMovies("popular", i));
 				}

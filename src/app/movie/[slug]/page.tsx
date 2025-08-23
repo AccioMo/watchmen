@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import NavBar from "../../Components/NavBar";
-import { getImageURL, JSONValue } from "../../../API/TMDB";
+import { getImageURL, Movie } from "../../../API/TMDB";
 import { RatingIMDB } from "../../Components/Ratings";
 
 interface MovieDetails {
@@ -49,11 +49,11 @@ export default function MoviePage() {
 	const [movie, setMovie] = useState<MovieDetails | null>(null);
 	const [cast, setCast] = useState<CastMember[]>([]);
 	const [crew, setCrew] = useState<CrewMember[]>([]);
-	const [similarMovies, setSimilarMovies] = useState<JSONValue[]>([]);
+	const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const slug = params.slug as string;
+	const slug = params?.slug as string;
 
 	// Function to get movie details by ID
 	const getMovieDetails = async (movieId: string) => {
@@ -380,7 +380,7 @@ export default function MoviePage() {
 					<div>
 						<h2 className="text-3xl font-bold text-white mb-6">Similar Movies</h2>
 						<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-							{similarMovies.map((similarMovie: any, index) => (
+							{similarMovies.map((similarMovie: Movie, index) => (
 								<div 
 									key={index}
 									className="group cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
