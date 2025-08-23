@@ -1,0 +1,26 @@
+
+services:
+  watchmen:
+    image: watchmen:latest
+    container_name: watchmen
+    build:
+      context: .
+      target: dev
+    ports:
+      - "8080:3000"
+    networks:
+      - watchmen_network
+  consumet:
+    image: consumet:latest
+    container_name: consumet-api
+    build:
+      context: .
+      target: dev
+    ports:
+      - "4000:3000"
+    networks:
+      - watchmen_network
+
+networks:
+  watchmen_network:
+    driver: bridge

@@ -1,8 +1,8 @@
 "use client";
 
-import NavBar from "./Components/NavBar";
-import Footer from "./Components/Footer";
-import EmblaCarousel from "./Components/Carousel/EmblaCarousel";
+import NavBar from "@/Components/NavBar";
+import Footer from "@/Components/Footer";
+import EmblaCarousel from "@/Components/Carousel/EmblaCarousel";
 import { EmblaOptionsType } from "embla-carousel";
 
 const OPTIONS: EmblaOptionsType = { loop: true, dragFree: true };

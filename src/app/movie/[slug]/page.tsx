@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import NavBar from "../../Components/NavBar";
-import { getImageURL, Movie } from "../../../API/TMDB";
-import { RatingIMDB } from "../../Components/Ratings";
+import NavBar from "@/app/Components/NavBar";
+import { getImageURL, Movie } from "@/API/TMDB";
+import { RatingIMDB } from "@/app/Components/Ratings";
 
 interface MovieDetails {
 	id: number;
