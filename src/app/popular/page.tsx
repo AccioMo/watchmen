@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import NavBar from "@/app/Components/NavBar";
 import { getImageURL, getTMDBMovies, Movie } from "@/API/TMDB";
 import { RatingIMDB, RatingRoTo } from "@/app/Components/Ratings";
 import TwoEmblaCarousel from "@/app/Components/Carousel/TwoEmblaCarousel";
@@ -36,7 +35,6 @@ function Popular() {
 	console.log("Popular Movies: ", popularMovies.length);
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
-			<NavBar fixed={true} />
 			<div className="bg-gradient-to-b from-transparent to-black/20">
 				<div className="hiddem h-screen py-2 px-3">
 					{popularMovies && popularMovies[1] && (

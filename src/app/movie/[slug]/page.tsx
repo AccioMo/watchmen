@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import NavBar from "@/app/Components/NavBar";
 import { getImageURL, Movie } from "@/API/TMDB";
 import { RatingIMDB } from "@/app/Components/Ratings";
 
@@ -175,9 +174,8 @@ export default function MoviePage() {
 	if (loading) {
 		return (
 			<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
-				<NavBar fixed={true} />
 				<div className="pt-32 flex items-center justify-center min-h-[60vh]">
-					<div className="glass-card glass-border p-8 rounded-2xl">
+					<div className="p-8 rounded-2xl">
 						<div className="animate-pulse flex space-x-4">
 							<div className="rounded-full bg-gray-300 h-10 w-10"></div>
 							<div className="flex-1 space-y-2 py-1">
@@ -194,9 +192,8 @@ export default function MoviePage() {
 	if (error || !movie) {
 		return (
 			<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
-				<NavBar fixed={true} />
 				<div className="pt-32 flex items-center justify-center min-h-[60vh]">
-					<div className="glass-card glass-border p-8 rounded-2xl text-center">
+					<div className="p-8 rounded-2xl text-center">
 						<h1 className="text-2xl font-bold text-white mb-4">Movie Not Found</h1>
 						<p className="text-white/70 mb-6">{error}</p>
 						<button 
@@ -213,7 +210,6 @@ export default function MoviePage() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
-			<NavBar fixed={true} />
 			
 			{/* Hero Section */}
 			<div className="relative h-screen overflow-hidden">
@@ -297,7 +293,7 @@ export default function MoviePage() {
 							<h2 className="text-3xl font-bold text-white mb-6">Cast</h2>
 							<div className="grid grid-cols-2 gap-4">
 								{cast.map((actor) => (
-									<div key={actor.id} className="flex items-center space-x-3 glass-card glass-border p-3 rounded-xl">
+									<div key={actor.id} className="flex items-center space-x-3 p-3 rounded-xl">
 										<img
 											src={actor.profile_path ? getImageURL(actor.profile_path, 'small') : '/placeholder-person.svg'}
 											alt={actor.name}
@@ -319,7 +315,7 @@ export default function MoviePage() {
 							<h2 className="text-3xl font-bold text-white mb-6">Crew</h2>
 							<div className="grid grid-cols-1 gap-4">
 								{crew.map((member, index) => (
-									<div key={`${member.id}-${index}`} className="flex items-center space-x-3 glass-card glass-border p-3 rounded-xl">
+									<div key={`${member.id}-${index}`} className="flex items-center space-x-3 p-3 rounded-xl">
 										<img
 											src={member.profile_path ? getImageURL(member.profile_path, 'small') : '/placeholder-person.svg'}
 											alt={member.name}
@@ -337,7 +333,7 @@ export default function MoviePage() {
 				</div>
 
 				{/* Movie Details */}
-				<div className="glass-card glass-border p-6 rounded-2xl">
+				<div className="p-6 rounded-2xl">
 					<h2 className="text-3xl font-bold text-white mb-6">Details</h2>
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 						<div>
@@ -391,7 +387,7 @@ export default function MoviePage() {
 										alt={similarMovie.title}
 										className="w-full h-64 object-cover"
 									/>
-									<div className="p-3 glass-card">
+									<div className="p-3">
 										<h3 className="text-white font-semibold text-sm line-clamp-2">{similarMovie.title}</h3>
 										<div className="flex items-center justify-between mt-2">
 											<RatingIMDB>{similarMovie.vote_average.toFixed(1)}</RatingIMDB>

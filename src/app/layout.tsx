@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import NavBar from "@/Components/NavBar";
  
 import '../index.css'
 
@@ -16,6 +17,7 @@ export default function RootLayout({
 		<html lang="en">
 			<body>
 				<div id="root">
+					<NavBar fixed={true} />
 					{children}
 				</div>
 			</body>
