@@ -34,7 +34,7 @@
     "paths": {
       "@/*": ["./*"],
       "@/app/*": ["./app/*"],
-      "@/components/*": ["./components/*"],
+      "@/Components/*": ["./app/Components/*"],
       "@/lib/*": ["./lib/*"],
       "@/styles/*": ["./styles/*"]
     },
