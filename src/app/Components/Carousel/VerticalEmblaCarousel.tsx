@@ -15,6 +15,8 @@ const numberWithinRange = (number: number, min: number, max: number): number =>
 type PropType = {
 	genre: string;
 	options?: EmblaOptionsType;
+	// Fractional offset between first and second snap (0..1). e.g. 0.5 = half an element
+	startOffset?: number;
 };
 
 interface SlideProps {
@@ -62,7 +64,7 @@ export const VerticalSlide: React.FC<SlideProps> = React.memo(({ movie }) => {
 VerticalSlide.displayName = 'VerticalSlide';
 
 const VerticalEmblaCarousel: React.FC<PropType> = React.memo((props) => {
-	const { options, genre } = props;
+	const { options, genre, startOffset = 0 } = props;
 	const updatedSlide = useRef(false);
 	const [slides, setSlides] = useState<Movie[]>([]);
 	const [pageNum, setPageNum] = useState(1);
@@ -70,11 +72,14 @@ const VerticalEmblaCarousel: React.FC<PropType> = React.memo((props) => {
 		...options,
 		axis: 'y',
 		dragFree: true,
-		loop: true,
+		// Use loop: false and implement a safe wrap (jump) to simulate infinite scrolling
+		loop: false,
 		skipSnaps: false,
 		containScroll: 'trimSnaps'
 	}, [WheelGestures()]);
+	const isJumping = useRef(false);
 	const tweenFactor = useRef(0);
+	const initialOffsetApplied = useRef(false);
 
 	const setTweenFactor = useCallback((emblaApi: EmblaCarouselType) => {
 		tweenFactor.current =
@@ -155,27 +160,6 @@ const VerticalEmblaCarousel: React.FC<PropType> = React.memo((props) => {
 					setSlides(nextSlides);
 					setPageNum(2);
 					
-					// Set different random starting positions based on path
-					setTimeout(() => {
-						let randomIndex;
-						switch (genre) {
-							case 'popular':
-								randomIndex = Math.floor(Math.random() * Math.min(5, nextSlides.length));
-								break;
-							case 'top_rated':
-								randomIndex = Math.floor(Math.random() * Math.min(8, nextSlides.length));
-								break;
-							case 'now_playing':
-								randomIndex = Math.floor(Math.random() * Math.min(12, nextSlides.length));
-								break;
-							case 'upcoming':
-								randomIndex = Math.floor(Math.random() * Math.min(15, nextSlides.length));
-								break;
-							default:
-								randomIndex = Math.floor(Math.random() * nextSlides.length);
-						}
-						emblaApi.scrollTo(randomIndex, false);
-					}, 50);
 				})
 				.catch((error) => console.error("Error fetching initial movies:", error));
 		}
@@ -183,18 +167,89 @@ const VerticalEmblaCarousel: React.FC<PropType> = React.memo((props) => {
 		// Set up embla events
 		setTweenFactor(emblaApi);
 		tweenOpacity(emblaApi);
+
+
+
+		// Wrap/jump handler to simulate infinite loop without visual artifacts.
+		const handleWrap = (emblaApi: EmblaCarouselType) => {
+			if (isJumping.current) return;
+			const scrollProgress = emblaApi.scrollProgress();
+			const engine = emblaApi.internalEngine();
+			const currentIndex = engine.index.get();
+			const snaps = emblaApi.scrollSnapList();
+			if (!snaps) return;
+			const lastIndex = snaps.length - 1;
+
+			// If user overscrolls past the start, jump to the last snap instantly.
+			if (scrollProgress <= -0.12 && currentIndex === 0) {
+				isJumping.current = true;
+				emblaApi.scrollTo(lastIndex, true);
+				setTimeout(() => (isJumping.current = false), 50);
+				return;
+			}
+
+			// If user overscrolls past the end, jump to the first snap instantly.
+			if (scrollProgress >= 1.12 && currentIndex === lastIndex) {
+				isJumping.current = true;
+				emblaApi.scrollTo(0, true);
+				setTimeout(() => (isJumping.current = false), 50);
+				return;
+			}
+		};
 		
+		const scrollHandler = () => {
+			tweenOpacity(emblaApi, "scroll");
+			handleWrap(emblaApi);
+		};
+
 		emblaApi
 			.on("slidesInView", logSlidesInView)
 			.on("reInit", setTweenFactor)
 			.on("reInit", tweenOpacity)
-			.on("scroll", tweenOpacity)
+			.on("scroll", scrollHandler)
 			.on("slideFocus", tweenOpacity);
-			
+
 		return () => {
+			// Remove all listeners we attached.
 			emblaApi.off("slidesInView", logSlidesInView);
+			emblaApi.off("reInit", setTweenFactor);
+			emblaApi.off("reInit", tweenOpacity as any);
+			emblaApi.off("scroll", scrollHandler);
+			emblaApi.off("slideFocus", tweenOpacity as any);
 		};
 	}, [emblaApi, setTweenFactor, tweenOpacity, logSlidesInView, genre, pageNum, slides.length]);
+
+	// Apply a safe one-time integer snap start so alternating carousels are
+	// visually staggered while preserving Embla's internal state. If the
+	// caller passes a truthy `startOffset` we'll jump to the 2nd slide (index
+	// 1) once slides are loaded.
+	useEffect(() => {
+		if (!emblaApi) return;
+		if (!startOffset || startOffset === 0) return;
+		if (initialOffsetApplied.current) return;
+		if (!slides || slides.length === 0) return;
+
+		// Defer briefly to ensure Embla is initialized and layout is stable.
+		const t = setTimeout(() => {
+			try {
+				// Smoothly scroll to the second slide (index 1) so the stagger is
+				// animated instead of an instant jump. Passing `false` as the
+				// second argument enables the animated scroll.
+				emblaApi.scrollTo(1, false);
+				initialOffsetApplied.current = true;
+			} catch (err) {
+				console.warn('Failed to apply startIndex via scrollTo:', err);
+			}
+		}, 40);
+
+		return () => clearTimeout(t);
+	}, [emblaApi, slides.length, startOffset]);
+
+	// Ensure Embla re-initializes when slides are appended/removed so snap lists stay correct.
+	useEffect(() => {
+		if (!emblaApi) return;
+		emblaApi.reInit();
+	}, [slides.length, emblaApi]);
 
 	return (
 		<div className="vertical-embla">

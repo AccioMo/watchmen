@@ -16,15 +16,6 @@ function Home() {
 			
 			{/* Main Content */}
 			<div className="flex justify-between relative h-full gap-3 md:gap-4 lg:gap-6 overflow-hidden rounded-xl">
-				{/* Column 1 - Popular Movies */}
-				<div className="flex-1 h-full min-w-0">
-					<VerticalEmblaCarousel 
-						options={OPTIONS} 
-						genre={"Adventure"} 
-					/>
-				</div>
-				
-				{/* Column 2 - Top Rated Movies */}
 				<div className="flex-1 h-full min-w-0">
 					<VerticalEmblaCarousel 
 						options={OPTIONS} 
@@ -36,7 +27,15 @@ function Home() {
 				<div className="flex-1 h-full min-w-0">
 					<VerticalEmblaCarousel 
 						options={OPTIONS} 
-						genre={"Thriller"} 
+						genre={"Thriller"}
+						startOffset={0.5}
+					/>
+				</div>
+
+				<div className="flex-1 h-full min-w-0">
+					<VerticalEmblaCarousel 
+						options={OPTIONS} 
+						genre={"Animation"} 
 					/>
 				</div>
 				
@@ -44,7 +43,8 @@ function Home() {
 				<div className="flex-1 h-full min-w-0">
 					<VerticalEmblaCarousel 
 						options={OPTIONS} 
-						genre={"Horror"} 
+						genre={"Horror"}
+						startOffset={0.5}
 					/>
 				</div>
 
@@ -52,7 +52,7 @@ function Home() {
 				<div className="flex-1 h-full min-w-0">
 					<VerticalEmblaCarousel 
 						options={OPTIONS} 
-						genre={"Comedy"} 
+						genre={"Comedy"}
 					/>
 				</div>
 			</div>
