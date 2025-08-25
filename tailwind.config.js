@@ -7,13 +7,18 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				"primary": "#0d0d0d",
-				"secondary": "#0c0c0c",
-				"accent": "#0a0a0a",
-				"glass": "rgba(255, 255, 255, 0.1)",
-				"glass-border": "rgba(255, 255, 255, 0.15)",
-				"imdb": "#deb522",
-				"roto": "#ef4444",
+				"primary": "var(--color-primary)",
+				"primary-rgb": "rgb(var(--color-primary-rgb-value))",
+				"secondary": "var(--color-secondary)",
+				"secondary-rgb": "rgb(var(--color-secondary-rgb-value))",
+				"accent": "var(--color-accent)",
+				"accent-rgb": "rgb(var(--color-accent-rgb-value))",
+				"glass": "rgba(var(--glass-rgb), 0.1)",
+				"glass-border": "rgba(var(--glass-rgb), 0.15)",
+				"imdb": "var(--color-imdb)",
+				"imdb-rgb": "rgb(var(--color-imdb-rgb-value))",
+				"roto": "var(--color-roto)",
+				"roto-rgb": "rgb(var(--color-roto-rgb-value))",
 			},
 			animation: {
 				'float': 'float 6s ease-in-out infinite',

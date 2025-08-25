@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getImageURL, getTMDBMovies, Movie } from "@/API/TMDB";
+import { getImageURL, getTMDBMoviesBy, Movie } from "@/API/TMDB";
 import { RatingIMDB, RatingRoTo } from "@/app/Components/Ratings";
 import TwoEmblaCarousel from "@/app/Components/Carousel/TwoEmblaCarousel";
 
@@ -17,7 +17,7 @@ function TopRated() {
 			try {
 				const promises: Promise<Movie[]>[] = [];
 				for (let i = 1; i < 4; i++) {
-					promises.push(getTMDBMovies("top_rated", i));
+					promises.push(getTMDBMoviesBy("top_rated", i));
 				}
 				const results = await Promise.all(promises);
 				const allMovies = results.flat();

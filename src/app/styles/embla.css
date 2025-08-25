@@ -6,7 +6,7 @@
 	align-items: center;
 	position: relative;
 	--slide-height: 280px;
-	--slide-spacing: 1rem;
+	--slide-spacing: 0.5rem;
 	--slide-size: 95%;
   }
 

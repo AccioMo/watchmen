@@ -54,7 +54,6 @@ export default function MoviePage() {
 
 	const slug = params?.slug as string;
 
-	// Function to get movie details by ID
 	const getMovieDetails = async (movieId: string) => {
 		try {
 			const response = await fetch(
@@ -67,7 +66,6 @@ export default function MoviePage() {
 		}
 	};
 
-	// Function to get movie credits
 	const getMovieCredits = async (movieId: string) => {
 		try {
 			const response = await fetch(
@@ -80,7 +78,6 @@ export default function MoviePage() {
 		}
 	};
 
-	// Function to get similar movies
 	const getSimilarMovies = async (movieId: string) => {
 		try {
 			const response = await fetch(
@@ -95,7 +92,6 @@ export default function MoviePage() {
 		}
 	};
 
-	// Function to search for movie by name
 	const searchMovieByName = async (movieName: string) => {
 		try {
 			const response = await fetch(

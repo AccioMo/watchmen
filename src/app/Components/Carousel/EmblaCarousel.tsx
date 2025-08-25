@@ -5,12 +5,13 @@ import {
 	EmblaOptionsType,
 } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
+import WheelGestures from "embla-carousel-wheel-gestures";
 import {
 	NextButton,
 	PrevButton,
 	usePrevNextButtons,
 } from "./EmblaCarouselArrowButtons";
-import { getTMDBMovies, getImageURL, Movie } from "../../../API/TMDB";
+import { getTMDBMoviesBy, getImageURL, Movie } from "../../../API/TMDB";
 
 import "../../styles/base.css";
 import "../../styles/sandbox.css";
@@ -70,7 +71,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 	const updatedSlide = useRef(false);
 	const [slides, setSlides] = useState<Movie[]>([]);
 	const [pageNum, setPageNum] = useState(1);
-	const [emblaRef, emblaApi] = useEmblaCarousel(options);
+	const [emblaRef, emblaApi] = useEmblaCarousel(options, [WheelGestures()]);
 	const tweenFactor = useRef(0);
 
 	const {
@@ -148,7 +149,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 				updatedSlide.current === false
 			) {
 				updatedSlide.current = true;
-				getTMDBMovies(path, pageNum)
+				getTMDBMoviesBy(path, pageNum)
 					.then((nextSlides) => {
 						const nextSlidesLength = nextSlides.length;
 						console.log("nextSlides: ", nextSlides);
@@ -178,7 +179,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 			if (!slides || slides.length === 0) {
 				console.log("Fetching movies");
 				try {
-					const nextSlides = await getTMDBMovies(path, pageNum);
+					const nextSlides = await getTMDBMoviesBy(path, pageNum);
 					setSlides(nextSlides);
 					setPageNum((prevPageNum) => prevPageNum + 1);
 				} catch (error) {
