@@ -47,7 +47,7 @@ const getTMDBMoviesBy = async (
 	}
 	
 	return tmdbAPI
-		.get(`${by}?language=en-US&page=${pageNum}`)
+		.get(`movie/${by}?language=en-US&page=${pageNum}`)
 		.then((response) => {
 			return response?.data?.results || [];
 		})
