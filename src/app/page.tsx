@@ -27,7 +27,7 @@ function Home() {
 				<div className="flex-1 h-full min-w-0">
 					<VerticalEmblaCarousel 
 						options={OPTIONS} 
-						genre={"Thriller"}
+						genre={"Fantasy"}
 						startOffset={0.5}
 					/>
 				</div>
