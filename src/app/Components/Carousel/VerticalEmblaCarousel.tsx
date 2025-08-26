@@ -168,8 +168,6 @@ const VerticalEmblaCarousel: React.FC<PropType> = React.memo((props) => {
 		setTweenFactor(emblaApi);
 		tweenOpacity(emblaApi);
 
-
-
 		// Wrap/jump handler to simulate infinite loop without visual artifacts.
 		const handleWrap = (emblaApi: EmblaCarouselType) => {
 			if (isJumping.current) return;

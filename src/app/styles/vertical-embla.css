@@ -45,8 +45,8 @@
 
 @media screen and (min-width: 1536px) {
 	.vertical-embla {
-		--slide-width: 280px;
-		--slide-height: 420px;
+		--slide-width: 180px;
+		--slide-height: 60%;
 		--slide-spacing: 0.45rem;
 	}
 }
@@ -81,14 +81,15 @@
 	margin-top: calc(var(--slide-spacing) * -1);
 	padding: 0.5rem;
 	box-sizing: border-box;
+	gap: 0.5rem;
 }
 
 .vertical-embla__slide {
 	flex: 0 0 var(--slide-height);
 	min-width: 0;
 	min-height: var(--slide-height);
-	padding-top: var(--slide-spacing);
-	width: 100%;
+	/* padding-top: var(--slide-spacing); */
+	/* width: 100%; */
 	height: var(--slide-height);
 	display: flex;
 	flex-direction: column;

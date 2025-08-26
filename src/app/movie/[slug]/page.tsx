@@ -205,7 +205,7 @@ export default function MoviePage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
+		<div className="min-h-screen bg-gradient-to-br from-primary via-primary to-primary animated-bg">
 			
 			{/* Hero Section */}
 			<div className="relative h-screen overflow-hidden">
@@ -215,7 +215,7 @@ export default function MoviePage() {
 					className="absolute inset-0 w-full h-full object-cover"
 				/>
 				<div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
-				<div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+				<div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-transparent"></div>
 				
 				<div className="relative z-10 flex items-end h-full">
 					<div className="container mx-auto px-4 md:px-8 pb-16">

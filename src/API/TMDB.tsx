@@ -63,6 +63,33 @@ const getTMDBMoviesBy = async (
 		});
 };
 
+const getTMDBMoviesByNew = async (
+	pageNum: number = 1
+): Promise<Movie[]> => {
+	if (pageNum < 1) return [];
+
+	if (!TMDB_ACCESS_TOKEN) {
+		console.error("TMDB Access Token is not configured");
+		return [];
+	}
+
+	return tmdbAPI
+		.get(`movie/now_playing?language=en-US&page=${pageNum}`)
+		.then((response) => {
+			return response?.data?.results || [];
+		})
+		.catch((error) => {
+			if (error.response?.status === 401) {
+				console.error("Unauthorized: Check your TMDB API key and access token");
+			} else if (error.response?.status === 429) {
+				console.error("Rate limit exceeded: Too many requests to TMDB API");
+			} else {
+				console.error("Error fetching TMDB movies by genre:", error.message);
+			}
+			return [];
+		});
+};
+
 /**
  * Translate a genre name (case-insensitive) to its TMDB genre id.
  * Returns the id or null if not found.
@@ -149,6 +176,7 @@ const getMoviePoster = async (quality: number, path: string) => {
 export {
 	tmdbAPI,
 	getTMDBMoviesBy,
+	getTMDBMoviesByNew,
 	getTMDBMoviesByGenre,
 	getTMDBMoviesByGenreName,
 	getGenreIdByName,
