@@ -9,6 +9,7 @@ import Link from 'next/link';
 const NavBar: React.FC<{ fixed?: boolean }> = () => {
 	const pathname = usePathname();
 	const [isSearchOpen, setIsSearchOpen] = useState(false);
+	const [isScrolled, setIsScrolled] = useState(false);
 
 	const navLinks = [
 		{ label: 'Watchmen', href: '/' },
@@ -17,6 +18,20 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
 		{ label: 'Romance', href: '/romance' },
 		{ label: 'Action', href: '/action' },
 	];
+
+	useEffect(() => {
+		const handleScroll = () => {
+			console.log(window.scrollY);
+			if (window.scrollY > 0) {
+				setIsScrolled(true);
+			} else {
+				setIsScrolled(false);
+			}
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, []);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -34,10 +49,17 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
 	return (
 		<>
 			<div className={`fixed top-0 w-full z-50 transition-all duration-300 pointer-events-none`}>
-				<div className="relative flex items-center px-6 py-3 pointer-events-auto bg-black/60 backdrop-blur-md border-b border-white/10">
+				<div
+					className={`relative flex items-center px-6 py-3 pointer-events-auto transition-all duration-300
+						${isScrolled
+							? 'bg-black/80 backdrop-blur-md border-b border-white/10'
+							: 'bg-gradient-to-b from-black/80 to-transparent border-none border-transparent'
+						}
+					`}
+				>
 					{/* Navigation Links */}
 					<nav className="flex items-center gap-6">
-						{navLinks.map((link, index) => (
+						{navLinks.map((link) => (
 							<Link
 								key={link.href}
 								href={link.href}

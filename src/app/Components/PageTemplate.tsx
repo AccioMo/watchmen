@@ -14,12 +14,12 @@ const PageTemplate: React.FC<Props> = ({ genres }) => {
 	const mainGenre = genres[0] || "Popular";
 
 	return (
-		<div className="w-screen h-screen bg-black animated-bg relative overflow-hidden">
+		<div className="min-h-screen bg-black animated-bg relative">
 			{/* Gradient Overlays */}
-			<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none z-10"></div>
+			<div className="fixed inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none z-10"></div>
 
 			{/* Main Content */}
-			<div className="h-full w-full pt-0">
+			<div className="w-full pt-0">
 				<InfiniteMovieGrid genre={mainGenre} />
 			</div>
 
@@ -27,6 +27,7 @@ const PageTemplate: React.FC<Props> = ({ genres }) => {
                 If we want it at the bottom of the infinite list, it should be in the grid component or 
                 we accept it might never be reached. 
                 For now, let's keep it fixed or removing it effectively since infinite scroll makes footers hard.
+				sounds good
             */}
 		</div>
 	);

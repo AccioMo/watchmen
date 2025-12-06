@@ -83,7 +83,7 @@ const InfiniteMovieGrid: React.FC<Props> = ({ genre }) => {
 	const infiniteGridItems = movies.slice(30);
 
 	return (
-		<div className="w-full h-full overflow-y-auto pb-20 custom-scrollbar">
+		<div className="w-full pb-20">
 			<div className="w-full max-w-full">
 
 				{/* Section 1: Hero Carousel (10 Items) */}

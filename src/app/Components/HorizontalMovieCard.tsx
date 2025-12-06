@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { getImageURL, Movie } from "../../API/TMDB";
+import Button from "./Button";
 
 type Props = {
 	movies: Movie[];
@@ -142,18 +143,20 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
 										</p>
 
 										<div className="flex gap-4">
-											<button
+											<Button
 												onClick={() => handlePlayClick(movie.id)}
-												className="bg-white text-black px-8 py-3 rounded-full font-bold text-sm md:text-base hover:bg-neutral-200 transition-colors shadow-lg"
+												variant="primary"
+												size="md"
 											>
 												Play Now
-											</button>
-											<button
+											</Button>
+											<Button
 												onClick={() => handlePlayClick(movie.id)}
-												className="bg-white/10 backdrop-blur-md text-white px-8 py-3 rounded-full font-bold text-sm md:text-base hover:bg-white/20 transition-colors border border-white/10 shadow-lg"
+												variant="secondary"
+												size="md"
 											>
 												More Info
-											</button>
+											</Button>
 										</div>
 									</div>
 								</div>

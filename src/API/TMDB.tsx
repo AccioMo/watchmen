@@ -45,7 +45,7 @@ const getTMDBMoviesBy = async (
 		console.error("TMDB Access Token is not configured");
 		return [];
 	}
-	
+
 	return tmdbAPI
 		.get(`movie/${by}?language=en-US&page=${pageNum}`)
 		.then((response) => {
@@ -205,6 +205,84 @@ const getMoviePoster = async (quality: number, path: string) => {
 		});
 };
 
+const getMovieReviews = async (movieId: number | string) => {
+	if (!movieId) return { results: [] };
+	if (!TMDB_ACCESS_TOKEN) return { results: [] };
+
+	try {
+		const response = await tmdbAPI.get(`movie/${movieId}/reviews?language=en-US`);
+		return response?.data || { results: [] };
+	} catch (error) {
+		console.error("Error fetching reviews:", error);
+		return { results: [] };
+	}
+};
+
+const getPersonDetails = async (personId: number | string) => {
+	if (!personId) return null;
+	if (!TMDB_ACCESS_TOKEN) return null;
+
+	try {
+		const response = await tmdbAPI.get(`person/${personId}?language=en-US`);
+		return response?.data || null;
+	} catch (error) {
+		console.error("Error fetching person details:", error);
+		return null;
+	}
+};
+
+const getPersonCombinedCredits = async (personId: number | string) => {
+	if (!personId) return { cast: [], crew: [] };
+	if (!TMDB_ACCESS_TOKEN) return { cast: [], crew: [] };
+
+	try {
+		const response = await tmdbAPI.get(`person/${personId}/combined_credits?language=en-US`);
+		return response?.data || { cast: [], crew: [] };
+	} catch (error) {
+		console.error("Error fetching person credits:", error);
+		return { cast: [], crew: [] };
+	}
+};
+
+const getMovieCredits = async (movieId: number | string) => {
+	if (!movieId) return { cast: [], crew: [] };
+	if (!TMDB_ACCESS_TOKEN) return { cast: [], crew: [] };
+
+	try {
+		const response = await tmdbAPI.get(`movie/${movieId}/credits?language=en-US`);
+		return response?.data || { cast: [], crew: [] };
+	} catch (error) {
+		console.error("Error fetching credits:", error);
+		return { cast: [], crew: [] };
+	}
+};
+
+const getSimilarMovies = async (movieId: number | string) => {
+	if (!movieId) return [];
+	if (!TMDB_ACCESS_TOKEN) return [];
+
+	try {
+		const response = await tmdbAPI.get(`movie/${movieId}/similar?language=en-US`);
+		return response?.data?.results || [];
+	} catch (error) {
+		console.error("Error fetching similar movies:", error);
+		return [];
+	}
+};
+
+const searchMovie = async (query: string) => {
+	if (!query) return [];
+	if (!TMDB_ACCESS_TOKEN) return [];
+
+	try {
+		const response = await tmdbAPI.get(`search/movie?query=${encodeURIComponent(query)}&language=en-US&page=1`);
+		return response?.data?.results || [];
+	} catch (error) {
+		console.error("Error searching movie:", error);
+		return [];
+	}
+};
+
 export {
 	tmdbAPI,
 	getTMDBMoviesBy,
@@ -215,4 +293,11 @@ export {
 	getMovieById,
 	getImageURL,
 	getMoviePoster,
+	getMovieReviews,
+	getPersonDetails,
+	getPersonCombinedCredits,
+	getMovieCredits,
+	getSimilarMovies,
+	searchMovie,
 };
+
