@@ -108,17 +108,7 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 	return (
 		<div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
 			<div className="flex items-start justify-center min-h-screen pt-20 px-4">
-				<div className="w-full max-w-2xl glass-card glass-border rounded-3xl p-6 max-h-[80vh] overflow-hidden">
-					{/* Search Header */}
-					<div className="flex items-center justify-between mb-6">
-						<h2 className="text-2xl font-bold text-white">Search Movies</h2>
-						<button
-							onClick={onClose}
-							className="text-white/70 hover:text-white text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all"
-						>
-							✕
-						</button>
-					</div>
+				<div className="w-full max-w-2xl rounded-3xl p-6 max-h-[80vh] overflow-hidden">
 
 					{/* Search Input */}
 					<div className="relative mb-6">
@@ -127,8 +117,8 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 							type="text"
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
-							placeholder="Search for movies... (Ctrl+K to open)"
-							className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:bg-white/15 transition-all"
+							placeholder="Search for movies..."
+							className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-3 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:bg-white/15 transition-all"
 							onKeyDown={(e) => {
 								if (e.key === 'Escape') {
 									onClose();

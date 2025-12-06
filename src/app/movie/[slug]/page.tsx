@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getImageURL, Movie } from "@/API/TMDB";
 import { RatingIMDB } from "@/app/Components/Ratings";
+import Button from "@/app/Components/Button";
 
 interface MovieDetails {
 	id: number;
@@ -192,12 +193,12 @@ export default function MoviePage() {
 					<div className="p-8 rounded-2xl text-center">
 						<h1 className="text-2xl font-bold text-white mb-4">Movie Not Found</h1>
 						<p className="text-white/70 mb-6">{error}</p>
-						<button 
+						<Button 
 							onClick={() => router.back()}
-							className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-2 px-6 rounded-xl transition-all"
+							variant="primary"
 						>
 							Go Back
-						</button>
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -266,12 +267,36 @@ export default function MoviePage() {
 								</p>
 								
 								<div className="flex gap-4 pt-4">
-									<button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-3 px-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg">
-										▶ Watch Now
-									</button>
-									<button className="bg-white/20 backdrop-blur-sm text-white border border-white/30 font-semibold py-3 px-8 rounded-xl hover:bg-white/30 transition-all">
-										+ Add to Watchlist
-									</button>
+									<Button 
+										onClick={() => {
+											if (movie?.id) {
+												router.push(`/watch/${movie.id}`);
+											}
+										}}
+										variant="primary"
+										size="lg"
+										icon={
+											<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+												<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+											</svg>
+										}
+										iconPosition="left"
+									>
+										Watch Now
+									</Button>
+
+									<Button 
+										variant="secondary"
+										size="lg"
+										icon={
+											<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+											</svg>
+										}
+										iconPosition="left"
+									>
+										Add to Watchlist
+									</Button>
 								</div>
 							</div>
 						</div>

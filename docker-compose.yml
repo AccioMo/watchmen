@@ -15,15 +15,17 @@ services:
       - /app/node_modules
 
   consumet:
-    image: consumet:latest
-    container_name: consumet-api
     build:
-      context: .
-      target: dev
+      context: ./consumet
+      dockerfile: Dockerfile
+    container_name: consumet
     ports:
       - "4000:3000"
     networks:
       - watchmen_network
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
 
 networks:
   watchmen_network:

@@ -150,6 +150,38 @@ const getTMDBMoviesByGenre = async (
 		});
 };
 
+/**
+ * Fetch detailed movie information by movie ID
+ * @param movieId - The TMDB movie ID
+ * @returns Movie details or null if not found
+ */
+const getMovieById = async (movieId: number | string): Promise<Movie | null> => {
+	if (!movieId) return null;
+
+	if (!TMDB_ACCESS_TOKEN) {
+		console.error("TMDB Access Token is not configured");
+		return null;
+	}
+
+	try {
+		const response = await tmdbAPI.get(`movie/${movieId}?language=en-US`);
+		return response?.data || null;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response?.status === 401) {
+				console.error("Unauthorized: Check your TMDB API key and access token");
+			} else if (error.response?.status === 429) {
+				console.error("Rate limit exceeded: Too many requests to TMDB API");
+			} else if (error.response?.status === 404) {
+				console.error(`Movie with ID ${movieId} not found`);
+			} else {
+				console.error("Error fetching movie details:", error.message);
+			}
+		}
+		return null;
+	}
+};
+
 const getImageURL = (imageID: string, quality: string): string => {
 	switch (quality) {
 		case "max":
@@ -180,6 +212,7 @@ export {
 	getTMDBMoviesByGenre,
 	getTMDBMoviesByGenreName,
 	getGenreIdByName,
+	getMovieById,
 	getImageURL,
 	getMoviePoster,
 };

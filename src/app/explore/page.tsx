@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { getImageURL, getTMDBMoviesBy, Movie } from "../../API/TMDB";
 import MoviePoster from "../Components/MoviePoster";
+import Button from "../Components/Button";
 
 function Explore() {
 	// Hero carousel
@@ -24,6 +25,20 @@ function Explore() {
 	const [loading, setLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
 	const pageRef = useRef(1);
+
+	// Columns control for grid (2-6)
+	const [columns, setColumns] = useState<number>(4);
+	useEffect(() => {
+		try {
+			const saved = window.localStorage.getItem('explore_columns');
+			if (saved) setColumns(Number(saved));
+		} catch (e) {
+			// ignore
+		}
+	}, []);
+	useEffect(() => {
+		try { window.localStorage.setItem('explore_columns', String(columns)); } catch (e) {}
+	}, [columns]);
 
 	// Fetch hero slides (popular)
 	useEffect(() => {
@@ -169,31 +184,50 @@ function Explore() {
 					<div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-black" />
 
 					{/* Carousel content */}
-					<div className="relative z-10 h-full p-6 md:p-12">
-						<div className="h-full embla" >
+						<div className="relative z-10 h-full px-4 py-6 md:py-12">
+							{/* Constrain content width for different displays */}
+							<div className="mx-auto w-full max-w-xl sm:max-w-2xl md:max-w-4xl lg:max-w-6xl h-full embla">
 							<div className="h-full overflow-hidden" ref={emblaRef}>
 								<div className="flex h-full">
 									{heroSlides.map((m) => (
 										<div key={m.id} className="flex-[0_0_100%] h-full">
-											<div className="h-full flex items-center">
-												<div className="flex flex-col md:flex-row items-start gap-8 max-w-7xl px-2 md:px-4">
+												<div className="h-full flex items-center justify-center">
+													<div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 px-2 md:px-4 text-center md:text-left">
 													{/* Poster */}
 													{m.poster_path && (
 														<img
 															src={getImageURL(m.poster_path, 'mid')}
 															alt={m.title}
-															className="w-56 md:w-72 h-auto rounded-lg shadow-2xl"
+															className="w-56 md:w-72 h-auto rounded-lg shadow-2xl transform transition-transform duration-300 hover:scale-105 mx-auto md:mx-0"
 														/>
 													)}
 													{/* Info */}
-													<div className="flex-1 text-white max-w-2xl">
+													<div className="flex-1 text-white max-w-2xl mx-auto md:mx-0">
+														{/* Translucent info card to lift content off the background */}
+														<div className="bg-black/50 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-white/10 shadow-lg">
 														<h1 className="text-4xl md:text-6xl font-bold mb-4">{m.title}</h1>
 														<div className="flex items-center gap-4 mb-6">
 															<span className="bg-yellow-500 text-black text-sm font-bold px-3 py-1 rounded">★ {m.vote_average?.toFixed ? m.vote_average.toFixed(1) : m.vote_average}</span>
 															<span className="text-gray-300">{m.release_date ? new Date(m.release_date).getFullYear() : ''}</span>
 														</div>
 														<p className="text-lg md:text-xl leading-relaxed text-gray-200 mb-8 line-clamp-6 md:line-clamp-none">{m.overview}</p>
-														<button className="bg-white text-black px-8 py-3 rounded-lg font-semibold text-lg hover:bg-gray-200 transition-colors duration-200" onClick={() => (window.location.href = `/movie/${m.id}`)}>Watch Now</button>
+														<div className="flex items-center gap-4">
+															<Button 
+																variant="primary" 
+																size="lg"
+																onClick={() => (window.location.href = `/movie/${m.id}`)}
+																icon={
+																	<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+																		<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+																	</svg>
+																}
+																iconPosition="left"
+															>
+																Watch
+															</Button>
+															<Button variant="secondary">Add to List</Button>
+														</div>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -207,19 +241,48 @@ function Explore() {
 			)}
 
 			{/* Second Section - Infinite Scroll Grid */}
-			<div className="bg-black min-h-screen p-8">
-				<div className="max-w-7xl mx-auto">
-					<h2 className="text-3xl font-bold text-white mb-8">Discover Movies</h2>
+			<div className="bg-black min-h-screen py-12">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="flex items-center justify-between mb-6">
+						<div>
+							<h2 className="text-3xl font-bold text-white">Discover Movies</h2>
+							<p className="text-sm text-gray-400 mt-1">Curated picks and top rated titles — keep scrolling for more.</p>
+						</div>
+							{/* Simple filter chips for visual interest (non-functional) and a columns slider */}
+							<div className="hidden sm:flex items-center gap-4">
+								<div className="flex items-center gap-2">
+									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">All</span>
+									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">Top Rated</span>
+									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">Popular</span>
+									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">Now Playing</span>
+								</div>
+								<div className="flex items-center gap-3">
+									<label htmlFor="cols" className="text-xs text-gray-300">Columns</label>
+									<input
+										type="range"
+										id="cols"
+										min={2}
+										max={12}
+										value={columns}
+										onChange={(e) => setColumns(Number((e.target as HTMLInputElement).value))}
+										className="w-36 accent-yellow-400"
+									/>
+									<span className="text-sm text-gray-200 w-6 text-right">{columns}</span>
+								</div>
+							</div>
+					</div>
 					
 					{/* Movie Grid */}
-					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+					<div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
 						{movies.map((movie) => (
 							<div key={movie.id} className="aspect-[2/3]">
-								<MoviePoster 
-									movie={movie} 
-									className="h-full w-full rounded-lg overflow-hidden"
-									imageQualityKey="min"
-								/>
+								<div className="h-full w-full rounded-lg overflow-hidden transform transition hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-b from-white/2 to-white/1 border border-white/5">
+									<MoviePoster 
+										movie={movie} 
+										className="h-full w-full"
+										imageQualityKey="min"
+									/>
+								</div>
 							</div>
 						))}
 					</div>
