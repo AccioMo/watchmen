@@ -1,13 +1,30 @@
-import { ReactNode } from 'react'
+import Link from "next/link";
 
-interface FooterProps {
-	children: ReactNode;
-}
-
-const Footer: React.FC<FooterProps> = ({ children }) => {
+export default function Footer() {
   return (
-	<div>{children}</div>
-  )
-}
+    <footer className="w-full bg-black/50 border-t border-white/5 py-12 mt-20 backdrop-blur-sm z-50 relative">
+      <div className="container mx-auto px-6 md:px-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
 
-export default Footer
+          {/* Brand / Copyright */}
+          <div className="text-center md:text-left">
+            <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 mb-2">
+              accioFX
+            </h2>
+            <p className="text-white/40 text-sm">
+              © {new Date().getFullYear()} AccioMo. All rights reserved.
+            </p>
+          </div>
+
+          {/* Links */}
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60">
+            <Link href="#" className="hover:text-white transition-colors">Credits to null</Link>
+            <Link href="#" className="hover:text-white transition-colors">About</Link>
+            <Link href="#" className="hover:text-white transition-colors">Contact</Link>
+            <Link href="#" className="hover:text-white transition-colors">Legal</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

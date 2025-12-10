@@ -1,4 +1,3 @@
-
 services:
   watchmen:
     image: watchmen:latest
@@ -7,25 +6,12 @@ services:
       context: .
       target: dev
     ports:
-      - "8080:3000"
+      - "443:4000"
     networks:
       - watchmen_network
     volumes:
       - .:/app
       - /app/node_modules
-
-  consumet:
-    build:
-      context: ./consumet
-      dockerfile: Dockerfile
-    container_name: consumet
-    ports:
-      - "4000:3000"
-    networks:
-      - watchmen_network
-    environment:
-      - NODE_ENV=production
-    restart: unless-stopped
 
 networks:
   watchmen_network:

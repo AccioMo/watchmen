@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import NavBar from "@/Components/NavBar";
 
+import Footer from "@/Components/Footer";
+
 import '../index.css'
 
 import { Outfit } from 'next/font/google'
@@ -23,6 +25,7 @@ export default function RootLayout({
 				<div id="root">
 					<NavBar fixed={true} />
 					{children}
+					<Footer />
 				</div>
 			</body>
 		</html>

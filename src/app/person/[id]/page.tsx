@@ -62,7 +62,13 @@ export default function PersonPage() {
 					: creditsData.crew;
 
 				// Filter for items with posters and title (movies mostly)
+				const seen = new Set();
 				const filtered = relevantCredits
+					.filter((c: any) => {
+						if (seen.has(c.id)) return false;
+						seen.add(c.id);
+						return true;
+					})
 					.filter((c: any) => (c.poster_path && (c.title || c.name)))
 					.sort((a: any, b: any) => (b.vote_count || 0) - (a.vote_count || 0)) // Sort by popularity approx
 					.slice(0, 20); // Top 20

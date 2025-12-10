@@ -9,11 +9,14 @@ import {
 	getMovieCredits,
 	getSimilarMovies,
 	getMovieReviews,
+	getMovieVideos,
 	searchMovie
 } from "../../../API/TMDB";
+
 import Button from "../../Components/Button";
 import InteractiveMovieBox from "../../Components/InteractiveMovieBox";
-import ActorCard from "../../Components/ActorCard";
+import CastList from "../../Components/CastList";
+import BehindTheScenes from "../../Components/BehindTheScenes";
 import Image from "next/image";
 
 interface MovieDetails {
@@ -64,6 +67,7 @@ interface Review {
 	};
 }
 
+
 export default function MoviePage() {
 	const params = useParams();
 	const router = useRouter();
@@ -74,6 +78,9 @@ export default function MoviePage() {
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [trailerKey, setTrailerKey] = useState<string | null>(null);
+
+
 
 	const slug = params?.slug as string;
 
@@ -98,10 +105,11 @@ export default function MoviePage() {
 				if (!movieData) throw new Error('Movie not found');
 				setMovie(movieData);
 
-				const [creditsData, similarData, reviewsData] = await Promise.all([
+				const [creditsData, similarData, reviewsData, videosData] = await Promise.all([
 					getMovieCredits(movieData.id),
 					getSimilarMovies(movieData.id),
-					getMovieReviews(movieData.id)
+					getMovieReviews(movieData.id),
+					getMovieVideos(movieData.id)
 				]);
 
 				setCast(creditsData.cast?.slice(0, 15) || []);
@@ -110,6 +118,9 @@ export default function MoviePage() {
 				).slice(0, 10) || []);
 				setSimilarMovies(similarData.slice(0, 10));
 				setReviews(reviewsData.results?.slice(0, 5) || []);
+
+				const trailer = videosData.results?.find((v: any) => v.type === "Trailer" && v.site === "YouTube");
+				setTrailerKey(trailer?.key || null);
 
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'An error occurred');
@@ -216,11 +227,28 @@ export default function MoviePage() {
 
 						{/* Actions */}
 						<div className="flex flex-wrap items-center gap-4 pt-4">
+							{trailerKey && (
+								<Button
+									onClick={() => window.open(`https://www.youtube.com/watch?v=${trailerKey}`, '_blank')}
+									variant="primary"
+									size="lg"
+									className="shadow-[0_0_30px_-5px_theme(colors.white)] hover:shadow-[0_0_40px_-5px_theme(colors.white)] transition-shadow duration-300"
+									icon={
+										<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+										</svg>
+									}
+								>
+									Watch Trailer
+								</Button>
+							)}
 							<Button
-								onClick={() => router.push(`/watch/${movie.id}`)}
-								variant="primary"
+								onClick={() => {
+									router.push(`/movie/watch/${movie.id}`);
+								}}
+								variant="secondary"
 								size="lg"
-								className="shadow-[0_0_30px_-5px_theme(colors.white)] hover:shadow-[0_0_40px_-5px_theme(colors.white)] transition-shadow duration-300"
 								icon={
 									<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
 										<path d="M8 5v14l11-7z" />
@@ -230,7 +258,7 @@ export default function MoviePage() {
 								Watch Now
 							</Button>
 							<Button
-								variant="secondary"
+								variant="ghost"
 								size="lg"
 								icon={
 									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,36 +269,17 @@ export default function MoviePage() {
 								Watchlist
 							</Button>
 						</div>
-					</div>
-				</div>
-			</div>
+					</div >
+				</div >
+			</div >
 
 			{/* CONTENT CONTAINER */}
-			<div className="relative z-20 bg-[#0d0d0d] pt-12">
+			< div className="relative z-20 bg-[#0d0d0d] pt-12" >
 
 				{/* CAST SECTION */}
-				{cast.length > 0 && (
-					<section className="container mx-auto px-6 md:px-12 mb-20">
-						<div className="flex items-center justify-between mb-8">
-							<h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
-								<span className="w-1 h-8 bg-purple-500 rounded-full"></span>
-								Top Cast
-							</h2>
-						</div>
-
-						<div className="flex overflow-x-auto gap-6 pb-8 snap-x custom-scrollbar">
-							{cast.map((actor) => (
-								<ActorCard
-									key={actor.id}
-									id={actor.id}
-									name={actor.name}
-									character={actor.character}
-									profilePath={actor.profile_path}
-								/>
-							))}
-						</div>
-					</section>
-				)}
+				<section className="container mx-auto px-6 md:px-12">
+					<CastList cast={cast} />
+				</section>
 
 				<div className="h-px bg-white/10 w-full mb-20 container mx-auto"></div>
 
@@ -278,35 +287,7 @@ export default function MoviePage() {
 				<section className="container mx-auto px-6 md:px-12 mb-20">
 					<div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
 						{/* Left: Crew */}
-						<div className="lg:col-span-2">
-							<h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
-								<span className="w-1 h-8 bg-blue-500 rounded-full"></span>
-								Behind the Scenes
-							</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
-								{crew.map((member, i) => (
-									<div key={`${member.id}-${i}`} className="flex items-start gap-4">
-										<div className="w-12 h-12 rounded-full bg-white/10 flex-shrink-0 overflow-hidden">
-											{member.profile_path ? (
-												<Image
-													src={getImageURL(member.profile_path, 'small')}
-													alt={member.name}
-													width={48}
-													height={48}
-													className="object-cover w-full h-full"
-												/>
-											) : (
-												<div className="w-full h-full flex items-center justify-center text-white/30 text-xs">N/A</div>
-											)}
-										</div>
-										<div>
-											<p className="text-white font-semibold text-lg">{member.name}</p>
-											<p className="text-white/50 text-sm uppercase tracking-wide">{member.job}</p>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
+						<BehindTheScenes crew={crew} />
 
 						{/* Right: Info */}
 						<div className="bg-white/5 p-8 rounded-3xl border border-white/5 h-fit backdrop-blur-sm">
@@ -350,60 +331,64 @@ export default function MoviePage() {
 				<div className="h-px bg-white/10 w-full mb-20 container mx-auto"></div>
 
 				{/* REVIEWS SECTION */}
-				{reviews.length > 0 && (
-					<section className="container mx-auto px-6 md:px-12 mb-20">
-						<h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
-							<span className="w-1 h-8 bg-yellow-500 rounded-full"></span>
-							User Reviews
-						</h2>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							{reviews.map((review) => (
-								<div key={review.id} className="bg-white/5 hover:bg-white/10 p-6 rounded-2xl border border-white/5 transition-colors cursor-pointer" onClick={() => router.push(`/review/${review.id}`)}>
-									<div className="flex items-center justify-between mb-4">
-										<div className="flex items-center gap-3">
-											<div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center font-bold text-white">
-												{review.author[0].toUpperCase()}
+				{
+					reviews.length > 0 && (
+						<section className="container mx-auto px-6 md:px-12 mb-20">
+							<h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
+								<span className="w-1 h-8 bg-yellow-500 rounded-full"></span>
+								User Reviews
+							</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+								{reviews.map((review) => (
+									<div key={review.id} className="bg-white/5 hover:bg-white/10 p-6 rounded-2xl border border-white/5 transition-colors cursor-pointer" onClick={() => router.push(`/review/${review.id}`)}>
+										<div className="flex items-center justify-between mb-4">
+											<div className="flex items-center gap-3">
+												<div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center font-bold text-white">
+													{review.author[0].toUpperCase()}
+												</div>
+												<span className="font-semibold text-white">{review.author}</span>
 											</div>
-											<span className="font-semibold text-white">{review.author}</span>
+											{review.author_details.rating && (
+												<div className="flex items-center gap-1 text-[#deb522] bg-[#deb522]/10 px-2 py-1 rounded-lg text-sm font-bold">
+													<span>★</span>
+													<span>{review.author_details.rating}</span>
+												</div>
+											)}
 										</div>
-										{review.author_details.rating && (
-											<div className="flex items-center gap-1 text-[#deb522] bg-[#deb522]/10 px-2 py-1 rounded-lg text-sm font-bold">
-												<span>★</span>
-												<span>{review.author_details.rating}</span>
-											</div>
-										)}
+										<p className="text-white/70 line-clamp-4 leading-relaxed text-sm">
+											{review.content.replace(/\*\*/g, '')}
+										</p>
+										<span className="inline-block mt-4 text-purple-400 hover:text-purple-300 text-sm font-medium">
+											Read full review →
+										</span>
 									</div>
-									<p className="text-white/70 line-clamp-4 leading-relaxed text-sm">
-										{review.content.replace(/\*\*/g, '')}
-									</p>
-									<span className="inline-block mt-4 text-purple-400 hover:text-purple-300 text-sm font-medium">
-										Read full review →
-									</span>
-								</div>
-							))}
-						</div>
-					</section>
-				)}
+								))}
+							</div>
+						</section>
+					)
+				}
 
 				{/* SIMILAR MOVIES SECTION */}
-				{similarMovies.length > 0 && (
-					<section className="container mx-auto px-6 md:px-12 pb-20">
-						<h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
-							<span className="w-1 h-8 bg-red-500 rounded-full"></span>
-							More Like This
-						</h2>
-						<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-							{similarMovies.map((movie) => (
-								<InteractiveMovieBox
-									key={movie.id}
-									movie={movie}
-									className="w-full aspect-[2/3] rounded-xl"
-								/>
-							))}
-						</div>
-					</section>
-				)}
-			</div>
+				{
+					similarMovies.length > 0 && (
+						<section className="container mx-auto px-6 md:px-12 pb-20">
+							<h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
+								<span className="w-1 h-8 bg-red-500 rounded-full"></span>
+								More Like This
+							</h2>
+							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+								{similarMovies.map((movie) => (
+									<InteractiveMovieBox
+										key={movie.id}
+										movie={movie}
+										className="w-full aspect-[2/3] rounded-xl"
+									/>
+								))}
+							</div>
+						</section>
+					)
+				}
+			</div >
 
 			<style jsx global>{`
 				.custom-scrollbar::-webkit-scrollbar {
@@ -427,6 +412,6 @@ export default function MoviePage() {
 					animation: fadeInUp 0.8s ease-out forwards;
 				}
 			`}</style>
-		</div>
+		</div >
 	);
 }

@@ -5,6 +5,14 @@ const nextConfig = {
 	images: {
 		domains: ['image.tmdb.org'], // Allow TMDB images
 	},
+	async rewrites() {
+		return [
+			{
+				source: '/api/consumet/:path*',
+				destination: 'http://localhost:4000/:path*', // Proxy to Consumet container
+			},
+		];
+	},
 };
 
 export default nextConfig;

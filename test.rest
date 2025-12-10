@@ -1,3 +1,0 @@
-GET https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&language=en-US&page=1&with_genres=10749
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYTY0YmIzZjJhZjNjMzhlMmJlN2E0YjAwOGE0ZTBmMCIsIm5iZiI6MTcyMTQ5MzYwOC4yNjg1NjUsInN1YiI6IjY2OWJlMjA1NWMwMGYyN2Q1MDA1ZDdmZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.RAREQr0-so21fgnTiU9QsIdHd5MpBXPUfVHh_ytDft0
-accept: application/json
