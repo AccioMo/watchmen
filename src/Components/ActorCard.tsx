@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getImageURL } from "../../API/TMDB";
+import { getImageURL } from "../API/TMDB";
 
 type ActorCardProps = {
 	id: number;

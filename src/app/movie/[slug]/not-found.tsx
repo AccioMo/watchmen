@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Button from '@/app/Components/Button';
+import Button from '@/Components/Button';
 
 export default function MovieNotFound() {
 	return (
@@ -22,7 +22,7 @@ export default function MovieNotFound() {
 				<p className="text-white/70 mb-8">
 					We couldn't find the movie you're looking for. It may not be in our database yet.
 				</p>
-				
+
 				<div className="flex flex-col sm:flex-row gap-4 justify-center">
 					<Link href="/">
 						<Button variant="primary">

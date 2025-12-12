@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
-import { getImageURL, Movie, getMovieVideos } from "../../API/TMDB";
+import { getImageURL, Movie, getMovieVideos } from "../API/TMDB";
 import Button from "./Button";
+import TrailerModal from "./TrailerModal";
 
 type Props = {
     movies: Movie[];
@@ -13,6 +14,7 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
     const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [trailerKey, setTrailerKey] = useState<string | null>(null);
+    const [showTrailer, setShowTrailer] = useState(false);
 
     const fetchTrailer = useCallback(async (id: number) => {
         const videos = await getMovieVideos(id);
@@ -26,13 +28,13 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
         }
     }, [currentIndex, movies, fetchTrailer]);
 
-    const handlePlayClick = (id: number) => {
-        router.push(`/movie/watch/${id}`);
+    const handleMoreClick = (id: number) => {
+        router.push(`/movie/${id}`);
     };
 
     const handleTrailerClick = () => {
         if (trailerKey) {
-            window.open(`https://www.youtube.com/watch?v=${trailerKey}`, '_blank');
+            setShowTrailer(true);
         }
     };
 
@@ -47,9 +49,12 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
     // Auto-rotate every 10 seconds
     useEffect(() => {
         if (movies.length <= 1) return;
+        // Pause auto-rotation if trailer is open
+        if (showTrailer) return;
+
         const interval = setInterval(handleNext, 10000);
         return () => clearInterval(interval);
-    }, [movies.length, handleNext]);
+    }, [movies.length, handleNext, showTrailer]);
 
     // Swipe Support
     const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -177,24 +182,16 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
                                                 </Button>
                                             )}
                                             <Button
-                                                onClick={() => handlePlayClick(movie.id)}
+                                                onClick={() => handleMoreClick(movie.id)}
                                                 variant="secondary"
                                                 size="md"
                                                 icon={
-                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M8 5v14l11-7z" />
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
                                                 }
                                             >
-                                                Watch Now
-                                            </Button>
-                                            <Button
-                                                onClick={() => router.push(`/movie/${movie.id}`)}
-                                                variant="ghost"
-                                                size="md"
-                                                className="hover:bg-white/10"
-                                            >
-                                                Details
+                                                More
                                             </Button>
                                         </div>
                                     </div>
@@ -237,6 +234,15 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
                     />
                 ))}
             </div>
+
+            {/* Trailer Modal */}
+            {trailerKey && showTrailer && (
+                <TrailerModal
+                    trailerKey={trailerKey}
+                    isOpen={showTrailer}
+                    onClose={() => setShowTrailer(false)}
+                />
+            )}
         </div>
     );
 };

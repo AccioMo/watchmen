@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getImageURL } from "../../API/TMDB";
+import { getImageURL } from "../API/TMDB";
 
 interface CrewMember {
     id: number;

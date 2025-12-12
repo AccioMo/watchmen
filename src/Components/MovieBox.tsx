@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
-import { getImageURL, Movie } from "../../API/TMDB";
+import { getImageURL, Movie } from "../API/TMDB";
 
 type Props = {
 	movie: Movie;

@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand / Copyright */}
           <div className="text-center md:text-left">
             <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 mb-2">
-              accioFX
+              N4tflix
             </h2>
             <p className="text-white/40 text-sm">
               © {new Date().getFullYear()} AccioMo. All rights reserved.
@@ -18,10 +18,10 @@ export default function Footer() {
 
           {/* Links */}
           <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60">
-            <Link href="#" className="hover:text-white transition-colors">Credits to null</Link>
-            <Link href="#" className="hover:text-white transition-colors">About</Link>
-            <Link href="#" className="hover:text-white transition-colors">Contact</Link>
-            <Link href="#" className="hover:text-white transition-colors">Legal</Link>
+            <Link href="https://mozeggaf.vercel.app" className="hover:text-white transition-colors">Credits to null</Link>
+            <Link href="https://mozeggaf.vercel.app/about" className="hover:text-white transition-colors">About</Link>
+            <Link href="https://mozeggaf.vercel.app/contact" className="hover:text-white transition-colors">Contact</Link>
+            <Link href="/legal" className="hover:text-white transition-colors">Legal</Link>
           </div>
         </div>
       </div>

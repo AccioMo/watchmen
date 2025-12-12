@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getImageURL, Movie } from "../../API/TMDB";
+import { getImageURL, Movie } from "../API/TMDB";
 import Image from "next/image";
 
 interface SearchProps {

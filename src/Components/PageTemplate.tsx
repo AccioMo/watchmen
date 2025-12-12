@@ -5,9 +5,16 @@ import InfiniteMovieGrid from "./InfiniteMovieGrid";
 
 type Props = {
 	genres: string[]; // Keeping the prop for compatibility, but we might only use the first one or mix them.
+	title?: string;
 };
 
-const PageTemplate: React.FC<Props> = ({ genres }) => {
+const PageTemplate: React.FC<Props> = ({ genres, title }) => {
+	React.useEffect(() => {
+		if (title) {
+			document.title = title + " - N4tflix";
+		}
+	}, [title]);
+
 	// For the infinite grid, we typically focus on one main genre or a mix.
 	// If multiple genres are passed, we might pass the first one or handle it in the grid.
 	// Given the previous code passed e.g. ["Action"], we will use the first one.

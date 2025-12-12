@@ -39,7 +39,7 @@
         "./app/*"
       ],
       "@/Components/*": [
-        "./app/Components/*"
+        "./Components/*"
       ],
       "@/lib/*": [
         "./lib/*"

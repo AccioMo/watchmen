@@ -1,309 +1,224 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { getImageURL, getTMDBMoviesBy, Movie } from "../../API/TMDB";
-import MoviePoster from "../Components/MoviePoster";
-import Button from "../Components/Button";
+import { useState, useEffect } from "react";
+import Slider from "../../Components/Slider";
+import Chip from "../../Components/Chip";
+import Dropdown from "../../Components/Dropdown";
+import InfiniteMovieGrid from "../../Components/InfiniteMovieGrid";
+import { discoverMovies, Movie } from "../../API/TMDB";
+import genresData from "../../../genres.json";
 
-function Explore() {
-	// Hero carousel
-	const [heroSlides, setHeroSlides] = useState<Movie[]>([]);
-	const [currentHero, setCurrentHero] = useState(0);
-	const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
-	const autoTimerRef = useRef<number | null>(null);
+// Map Genre IDs to Colors
+const getGenreColor = (id: number) => {
+	const colors: { [key: number]: string } = {
+		28: "bg-blue-600", // Action
+		12: "bg-green-600", // Adventure
+		16: "bg-yellow-600", // Animation
+		35: "bg-pink-600", // Comedy
+		80: "bg-red-700", // Crime
+		99: "bg-gray-600", // Documentary
+		18: "bg-purple-600", // Drama
+		10751: "bg-orange-500", // Family
+		14: "bg-indigo-600", // Fantasy
+		36: "bg-amber-800", // History
+		27: "bg-red-900", // Horror
+		10402: "bg-rose-500", // Music
+		9648: "bg-slate-700", // Mystery
+		10749: "bg-pink-500", // Romance
+		878: "bg-cyan-600", // Sci-Fi
+		10770: "bg-emerald-700", // TV Movie
+		53: "bg-stone-600", // Thriller
+		10752: "bg-lime-800", // War
+		37: "bg-orange-800", // Western
+	};
+	return colors[id] || "bg-white/10";
+};
 
-	// Background crossfade state
-	const [bgAUrl, setBgAUrl] = useState<string | null>(null);
-	const [bgBUrl, setBgBUrl] = useState<string | null>(null);
-	const [activeBg, setActiveBg] = useState<'A' | 'B'>('A');
-	const [nextBg, setNextBg] = useState<'A' | 'B' | null>(null);
-	const activeBgRef = useRef<'A' | 'B'>('A');
-
-	// Grid data
+export default function ExplorePage() {
 	const [movies, setMovies] = useState<Movie[]>([]);
 	const [loading, setLoading] = useState(false);
+	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
-	const pageRef = useRef(1);
 
-	// Columns control for grid (2-6)
-	const [columns, setColumns] = useState<number>(4);
-	useEffect(() => {
-		try {
-			const saved = window.localStorage.getItem('explore_columns');
-			if (saved) setColumns(Number(saved));
-		} catch (e) {
-			// ignore
-		}
-	}, []);
-	useEffect(() => {
-		try { window.localStorage.setItem('explore_columns', String(columns)); } catch (e) {}
-	}, [columns]);
+	// Filters
+	const [yearRange, setYearRange] = useState<[number, number]>([1990, 2024]);
+	const [ratingRange, setRatingRange] = useState<[number, number]>([5, 10]);
+	const [minVotes, setMinVotes] = useState<[number, number]>([0, 500]);
+	const [sortBy, setSortBy] = useState("popularity.desc");
 
-	// Fetch hero slides (popular)
-	useEffect(() => {
-		const fetchHero = async () => {
-			try {
-				const popular = await getTMDBMoviesBy("popular", 1);
-				setHeroSlides(popular.slice(0, 10));
-			} catch (e) {
-				console.error("Error fetching hero slides:", e);
-			}
-		};
-		fetchHero();
-	}, []);
+	const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
 
-	// Initialize background when hero slides arrive
 	useEffect(() => {
-		if (heroSlides.length > 0) {
-			const url = getImageURL(heroSlides[0]?.backdrop_path, 'mid');
-			setBgAUrl(url);
-			setActiveBg('A');
-			activeBgRef.current = 'A';
-			setBgBUrl(null);
-			setNextBg(null);
-		}
-	}, [heroSlides]);
+		const timeoutId = setTimeout(() => {
+			// Reset logic
+			setMovies([]);
+			setPage(1);
+			setHasMore(true);
+			fetchMovies(1, true);
+		}, 500);
+		return () => clearTimeout(timeoutId);
+	}, [yearRange, ratingRange, minVotes, sortBy, selectedGenres]);
 
-	// Fetch movies for infinite scroll
-	const fetchMovies = useCallback(async (pageNum: number) => {
-		if (loading) return;
-		
+	const fetchMovies = async (pageNum: number, isNewFilter: boolean = false) => {
 		setLoading(true);
 		try {
-			const newMovies = await getTMDBMoviesBy("top_rated", pageNum);
-			if (newMovies.length === 0) {
+			const results = await discoverMovies({
+				primary_release_year: undefined,
+				"primary_release_date.gte": `${yearRange[0]}-01-01`,
+				"primary_release_date.lte": `${yearRange[1]}-12-31`,
+				"vote_average.gte": ratingRange[0],
+				"vote_average.lte": ratingRange[1],
+				"vote_count.gte": minVotes[0],
+				with_genres: selectedGenres.join(","),
+				sort_by: sortBy,
+				page: pageNum
+			});
+
+			if (results.length === 0) {
 				setHasMore(false);
+				if (isNewFilter) setMovies([]);
 			} else {
-				setMovies(prev => pageNum === 1 ? newMovies : [...prev, ...newMovies]);
+				setMovies(prev => isNewFilter ? results : [...prev, ...results]);
+				setPage(pageNum);
 			}
 		} catch (error) {
-			console.error("Error fetching movies:", error);
+			console.error(error);
 		} finally {
 			setLoading(false);
 		}
-	}, [loading]);
+	};
 
-	// Initial load
-	useEffect(() => {
-		fetchMovies(1);
-	}, []);
+	const loadMore = () => {
+		if (!loading && hasMore) {
+			fetchMovies(page + 1, false);
+		}
+	};
 
-	// Infinite scroll handler
-	useEffect(() => {
-		const handleScroll = () => {
-			if (
-				window.innerHeight + document.documentElement.scrollTop
-				>= document.documentElement.offsetHeight - 1000 &&
-				hasMore &&
-				!loading
-			) {
-				pageRef.current += 1;
-				fetchMovies(pageRef.current);
-			}
-		};
+	const toggleGenre = (id: number) => {
+		setSelectedGenres(prev =>
+			prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
+		);
+	};
 
-		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
-	}, [hasMore, loading, fetchMovies]);
-
-	// Hero carousel: update current index and autoplay
-	useEffect(() => {
-		if (!emblaApi) return;
-		const onSelect = () => setCurrentHero(emblaApi.selectedScrollSnap());
-		onSelect();
-		emblaApi.on('select', onSelect);
-		return () => {
-			emblaApi.off('select', onSelect);
-		};
-	}, [emblaApi]);
-
-	useEffect(() => {
-		if (!emblaApi) return;
-		if (autoTimerRef.current) window.clearInterval(autoTimerRef.current);
-		autoTimerRef.current = window.setInterval(() => {
-			const snapCount = emblaApi.scrollSnapList().length;
-			const next = (emblaApi.selectedScrollSnap() + 1) % snapCount;
-			emblaApi.scrollTo(next);
-		}, 4000);
-		return () => {
-			if (autoTimerRef.current) window.clearInterval(autoTimerRef.current);
-		};
-	}, [emblaApi, heroSlides.length]);
-
-	// When hero slide changes, preload next bg and then crossfade on load
-	useEffect(() => {
-		if (heroSlides.length === 0) return;
-		const nextUrl = getImageURL(heroSlides[currentHero]?.backdrop_path, 'mid');
-		const target: 'A' | 'B' = activeBgRef.current === 'A' ? 'B' : 'A';
-		if (target === 'A') setBgAUrl(nextUrl); else setBgBUrl(nextUrl);
-		setNextBg(target);
-	}, [currentHero, heroSlides]);
-
-	useEffect(() => { activeBgRef.current = activeBg; }, [activeBg]);
+	// Sort Options
+	const sortOptions = [
+		{ label: "Most Popular", value: "popularity.desc" },
+		{ label: "Least Popular", value: "popularity.asc" },
+		{ label: "Blockbusters", value: "revenue.desc" },
+		{ label: "Newest", value: "primary_release_date.desc" },
+		{ label: "Oldest", value: "primary_release_date.asc" },
+		{ label: "Critical Acclaim", value: "vote_average.desc" },
+	];
 
 	return (
-		<div className="min-h-screen bg-black">
-			{/* First Section - Hero Carousel */}
-			{heroSlides.length > 0 && (
-				<div className="relative h-screen w-full overflow-hidden">
-					{/* Synced blurred background from current slide with crossfade */}
-					<div className="absolute inset-0">
-						{bgAUrl && (
-							<img
-								src={bgAUrl}
-								alt="background A"
-								className={`absolute inset-0 w-full h-full object-cover scale-125 blur-sm transition-opacity duration-700`}
-								style={{ opacity: activeBg === 'A' ? 1 : 0 }}
-								onLoad={() => {
-									if (nextBg === 'A') {
-										setActiveBg('A');
-										activeBgRef.current = 'A';
-										setNextBg(null);
-									}
-								}}
-							/>
-						)}
-						{bgBUrl && (
-							<img
-								src={bgBUrl}
-								alt="background B"
-								className={`absolute inset-0 w-full h-full object-cover scale-125 blur-sm transition-opacity duration-700`}
-								style={{ opacity: activeBg === 'B' ? 1 : 0 }}
-								onLoad={() => {
-									if (nextBg === 'B') {
-										setActiveBg('B');
-										activeBgRef.current = 'B';
-										setNextBg(null);
-									}
-								}}
-							/>
-						)}
-					</div>
-					<div className="absolute inset-0 bg-black/50" />
-					<div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-black" />
+		<div className="h-screen bg-black text-white font-sans selection:bg-white/20 overflow-hidden flex flex-col">
 
-					{/* Carousel content */}
-						<div className="relative z-10 h-full px-4 py-6 md:py-12">
-							{/* Constrain content width for different displays */}
-							<div className="mx-auto w-full max-w-xl sm:max-w-2xl md:max-w-4xl lg:max-w-6xl h-full embla">
-							<div className="h-full overflow-hidden" ref={emblaRef}>
-								<div className="flex h-full">
-									{heroSlides.map((m) => (
-										<div key={m.id} className="flex-[0_0_100%] h-full">
-												<div className="h-full flex items-center justify-center">
-													<div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 px-2 md:px-4 text-center md:text-left">
-													{/* Poster */}
-													{m.poster_path && (
-														<img
-															src={getImageURL(m.poster_path, 'mid')}
-															alt={m.title}
-															className="w-56 md:w-72 h-auto rounded-lg shadow-2xl transform transition-transform duration-300 hover:scale-105 mx-auto md:mx-0"
-														/>
-													)}
-													{/* Info */}
-													<div className="flex-1 text-white max-w-2xl mx-auto md:mx-0">
-														{/* Translucent info card to lift content off the background */}
-														<div className="bg-black/50 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-white/10 shadow-lg">
-														<h1 className="text-4xl md:text-6xl font-bold mb-4">{m.title}</h1>
-														<div className="flex items-center gap-4 mb-6">
-															<span className="bg-yellow-500 text-black text-sm font-bold px-3 py-1 rounded">★ {m.vote_average?.toFixed ? m.vote_average.toFixed(1) : m.vote_average}</span>
-															<span className="text-gray-300">{m.release_date ? new Date(m.release_date).getFullYear() : ''}</span>
-														</div>
-														<p className="text-lg md:text-xl leading-relaxed text-gray-200 mb-8 line-clamp-6 md:line-clamp-none">{m.overview}</p>
-														<div className="flex items-center gap-4">
-															<Button 
-																variant="primary" 
-																size="lg"
-																onClick={() => (window.location.href = `/movie/${m.id}`)}
-																icon={
-																	<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-																		<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-																	</svg>
-																}
-																iconPosition="left"
-															>
-																Watch
-															</Button>
-															<Button variant="secondary">Add to List</Button>
-														</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									))}
-								</div>
+			{/* Main Content Area - Fixed Height (Screen - Navbar) */}
+			<div className="flex-1 flex pt-20 overflow-hidden">
+
+				{/* Fixed Discovery Section (Sidebar) */}
+				<aside className="w-[320px] md:w-[400px] flex-shrink-0 bg-black/50 border-r border-white/5 px-8 overflow-y-auto no-scrollbar z-20">
+					<header className="mb-5">
+						<h1 className="text-2xl font-bold mb-1 tracking-tighter">beep boop</h1>
+					</header>
+
+					<div className="space-y-10">
+						{/* Sort Dropdown moved here for "Control Panel" feel, or could be kept on right. 
+                             User asked for "Explore discovery section remains fixed". 
+                             Putting Sort here makes sense for a centralized control area. */}
+						<div className="pb-8 border-b border-white/5">
+							<Dropdown
+								label="Sort By"
+								options={sortOptions}
+								value={sortBy}
+								onChange={setSortBy}
+								className="w-full flex justify-between"
+							/>
+						</div>
+
+						{/* Sliders Section */}
+						<div className="space-y-8">
+							<div>
+								<h3 className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-6">Release Year</h3>
+								<Slider
+									min={1970}
+									max={2025}
+									value={yearRange}
+									onChange={setYearRange}
+								/>
+							</div>
+
+							<div>
+								<h3 className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-6">Rating</h3>
+								<Slider
+									min={0}
+									max={10}
+									step={0.1}
+									value={ratingRange}
+									onChange={setRatingRange}
+									formatLabel={(v) => v.toFixed(1)}
+								/>
+							</div>
+
+							<div>
+								<h3 className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-6">Vote Count</h3>
+								<Slider
+									min={0}
+									max={5000}
+									step={50}
+									value={minVotes}
+									onChange={setMinVotes}
+									formatLabel={(v) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v.toString()}
+								/>
 							</div>
 						</div>
-					</div>
-				</div>
-			)}
 
-			{/* Second Section - Infinite Scroll Grid */}
-			<div className="bg-black min-h-screen py-12">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="flex items-center justify-between mb-6">
+						{/* Genres Grid */}
 						<div>
-							<h2 className="text-3xl font-bold text-white">Discover Movies</h2>
-							<p className="text-sm text-gray-400 mt-1">Curated picks and top rated titles — keep scrolling for more.</p>
+							<h3 className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-4">Genres</h3>
+							<div className="flex flex-wrap gap-2">
+								{genresData.genres.map((genre) => (
+									<Chip
+										key={genre.id}
+										label={genre.name}
+										isSelected={selectedGenres.includes(genre.id)}
+										onClick={() => toggleGenre(genre.id)}
+										colorClass={getGenreColor(genre.id)}
+									/>
+								))}
+							</div>
 						</div>
-							{/* Simple filter chips for visual interest (non-functional) and a columns slider */}
-							<div className="hidden sm:flex items-center gap-4">
-								<div className="flex items-center gap-2">
-									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">All</span>
-									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">Top Rated</span>
-									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">Popular</span>
-									<span className="text-xs bg-white/6 text-white px-3 py-1 rounded-full">Now Playing</span>
-								</div>
-								<div className="flex items-center gap-3">
-									<label htmlFor="cols" className="text-xs text-gray-300">Columns</label>
-									<input
-										type="range"
-										id="cols"
-										min={2}
-										max={12}
-										value={columns}
-										onChange={(e) => setColumns(Number((e.target as HTMLInputElement).value))}
-										className="w-36 accent-yellow-400"
-									/>
-									<span className="text-sm text-gray-200 w-6 text-right">{columns}</span>
-								</div>
-							</div>
 					</div>
-					
-					{/* Movie Grid */}
-					<div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
-						{movies.map((movie) => (
-							<div key={movie.id} className="aspect-[2/3]">
-								<div className="h-full w-full rounded-lg overflow-hidden transform transition hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-b from-white/2 to-white/1 border border-white/5">
-									<MoviePoster 
-										movie={movie} 
-										className="h-full w-full"
-										imageQualityKey="min"
-									/>
-								</div>
-							</div>
-						))}
-					</div>
-					
-					{/* Loading Indicator */}
-					{loading && (
-						<div className="flex justify-center items-center py-8">
-							<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+				</aside>
+
+				{/* Scrollable Movie Grid Area */}
+				<main className="flex-1 overflow-y-auto bg-black scroll-smooth custom-scrollbar">
+					<InfiniteMovieGrid
+						movies={movies}
+						mode="grid"
+						hasMore={hasMore}
+						isLoading={loading}
+						onLoadMore={loadMore}
+					/>
+
+					{movies.length === 0 && !loading && (
+						<div className="h-[50vh] flex flex-col items-center justify-center text-center">
+							<p className="text-white/30 mb-4">No movies found matching your filters.</p>
+							<button
+								onClick={() => {
+									setYearRange([1990, 2024]);
+									setRatingRange([0, 10]);
+									setMinVotes([0, 500]);
+									setSelectedGenres([]);
+								}}
+								className="text-xs font-bold text-white uppercase tracking-wider hover:underline"
+							>
+								Reset Filters
+							</button>
 						</div>
 					)}
-					
-					{/* End Message */}
-					{!hasMore && movies.length > 0 && (
-						<div className="text-center py-8">
-							<p className="text-gray-400 text-lg">No more movies to load</p>
-						</div>
-					)}
-				</div>
+				</main>
 			</div>
 		</div>
 	);
 }
-
-export default Explore;

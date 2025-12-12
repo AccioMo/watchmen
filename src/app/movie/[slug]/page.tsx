@@ -12,11 +12,13 @@ import {
 	getMovieVideos,
 	searchMovie
 } from "../../../API/TMDB";
+import { useWatchlist } from "../../../context/WatchlistContext";
 
-import Button from "../../Components/Button";
-import InteractiveMovieBox from "../../Components/InteractiveMovieBox";
-import CastList from "../../Components/CastList";
-import BehindTheScenes from "../../Components/BehindTheScenes";
+import Button from "../../../Components/Button";
+import InteractiveMovieBox from "../../../Components/InteractiveMovieBox";
+import CastList from "../../../Components/CastList";
+import BehindTheScenes from "../../../Components/BehindTheScenes";
+import TrailerModal from "../../../Components/TrailerModal";
 import Image from "next/image";
 
 interface MovieDetails {
@@ -79,13 +81,22 @@ export default function MoviePage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [trailerKey, setTrailerKey] = useState<string | null>(null);
+	const [showTrailer, setShowTrailer] = useState(false);
+	const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
 
 
 
 	const slug = params?.slug as string;
 
 	useEffect(() => {
+		if (movie) {
+			document.title = `${movie.title}`;
+		}
+	}, [movie]);
+
+	useEffect(() => {
 		const fetchMovieData = async () => {
+			if (!slug) return;
 			setLoading(true);
 			setError(null);
 
@@ -229,7 +240,7 @@ export default function MoviePage() {
 						<div className="flex flex-wrap items-center gap-4 pt-4">
 							{trailerKey && (
 								<Button
-									onClick={() => window.open(`https://www.youtube.com/watch?v=${trailerKey}`, '_blank')}
+									onClick={() => setShowTrailer(true)}
 									variant="primary"
 									size="lg"
 									className="shadow-[0_0_30px_-5px_theme(colors.white)] hover:shadow-[0_0_40px_-5px_theme(colors.white)] transition-shadow duration-300"
@@ -258,15 +269,31 @@ export default function MoviePage() {
 								Watch Now
 							</Button>
 							<Button
-								variant="ghost"
+								variant={isInWatchlist(movie.id) ? "primary" : "ghost"}
 								size="lg"
+								onClick={() => {
+									if (isInWatchlist(movie.id)) {
+										removeFromWatchlist(movie.id);
+									} else {
+										// We need to map MovieDetails to Movie or use a subset.
+										// The context expects Movie (from API/TMDB), which matches reasonably well.
+										// We might need to ensure properties match or cast.
+										addToWatchlist(movie as unknown as Movie);
+									}
+								}}
 								icon={
-									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-									</svg>
+									isInWatchlist(movie.id) ? (
+										<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+											<path d="M5 13l4 4L19 7" />
+										</svg>
+									) : (
+										<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+										</svg>
+									)
 								}
 							>
-								Watchlist
+								{isInWatchlist(movie.id) ? "In Watchlist" : "Watchlist"}
 							</Button>
 						</div>
 					</div >
@@ -390,28 +417,14 @@ export default function MoviePage() {
 				}
 			</div >
 
-			<style jsx global>{`
-				.custom-scrollbar::-webkit-scrollbar {
-					height: 6px;
-				}
-				.custom-scrollbar::-webkit-scrollbar-track {
-					background: transparent;
-				}
-				.custom-scrollbar::-webkit-scrollbar-thumb {
-					background: rgba(255, 255, 255, 0.2);
-					border-radius: 10px;
-				}
-				.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-					background: rgba(255, 255, 255, 0.4);
-				}
-				@keyframes fadeInUp {
-					from { opacity: 0; transform: translateY(20px); }
-					to { opacity: 1; transform: translateY(0); }
-				}
-				.animate-fade-in-up {
-					animation: fadeInUp 0.8s ease-out forwards;
-				}
-			`}</style>
+			{trailerKey && (
+				<TrailerModal
+					trailerKey={trailerKey}
+					isOpen={showTrailer}
+					onClose={() => setShowTrailer(false)}
+				/>
+			)}
+
 		</div >
 	);
 }

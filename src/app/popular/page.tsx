@@ -1,114 +1,88 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getImageURL, getTMDBMoviesBy, Movie } from "@/API/TMDB";
-import { RatingIMDB, RatingRoTo } from "@/app/Components/Ratings";
-import TwoEmblaCarousel from "@/app/Components/Carousel/TwoEmblaCarousel";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { getTMDBMoviesBy, Movie } from "../../API/TMDB";
+import MoviePoster from "../../Components/MoviePoster";
 
-function Popular() {
-	const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+export default function Popular() {
+	const [movies, setPopularMovies] = useState<Movie[]>([]);
 	const [loading, setLoading] = useState(false);
-	
+	const [hasMore, setHasMore] = useState(true);
+	const pageRef = useRef(1);
+
 	useEffect(() => {
-		if (loading || popularMovies.length > 0) return;
-		
+		document.title = "Popular";
+		fetchMovies(1);
+	}, []);
+
+	const fetchMovies = async (pageNum: number) => {
+		if (loading) return;
 		setLoading(true);
-		const fetchMovies = async () => {
-			try {
-				const promises: Promise<Movie[]>[] = [];
-				for (let i = 1; i < 4; i++) {
-					promises.push(getTMDBMoviesBy("popular", i));
-				}
-				const results = await Promise.all(promises);
-				const allMovies = results.flat();
-				setPopularMovies(allMovies);
-			} catch (error) {
-				console.error("Error fetching popular movies:", error);
-			} finally {
-				setLoading(false);
+		try {
+			const newMovies = await getTMDBMoviesBy("popular", pageNum);
+			if (newMovies.length === 0) {
+				setHasMore(false);
+			} else {
+				setPopularMovies((prev) => (pageNum === 1 ? newMovies : [...prev, ...newMovies]));
 			}
-		};
-		
-		fetchMovies();
-	}, [loading, popularMovies.length]);
-	
-	console.log("Popular Movies: ", popularMovies.length);
+		} catch (error) {
+			console.error("Error fetching popular movies:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleScroll = useCallback(() => {
+		if (
+			window.innerHeight + document.documentElement.scrollTop >=
+			document.documentElement.offsetHeight - 800 &&
+			hasMore &&
+			!loading
+		) {
+			pageRef.current += 1;
+			fetchMovies(pageRef.current);
+		}
+	}, [hasMore, loading]);
+
+	useEffect(() => {
+		window.addEventListener("scroll", handleScroll);
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, [handleScroll]);
+
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
-			<div className="bg-gradient-to-b from-transparent to-black/20">
-				<div className="hiddem h-screen py-2 px-3">
-					{popularMovies && popularMovies[1] && (
+		<div className="min-h-screen bg-[#0f0f0f] pt-24 pb-12 px-4 md:px-8">
+			<div className="max-w-7xl mx-auto">
+				<header className="mb-8">
+					<h1 className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">Popular</h1>
+					<p className="text-white/60 text-lg">Trending movies everyone is watching</p>
+				</header>
+
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+					{movies.map((movie, index) => (
 						<div
-							className="relative w-full h-full glass-card overflow-hidden 
-							before:'' before:absolute before:top-0 before:left-0 before:w-full before:h-24 before:bg-gradient-to-b before:from-black before:to-transparent before:opacity-40"
+							key={`${movie.id}-${index}`}
+							className="group relative aspect-[2/3] rounded-xl overflow-hidden bg-white/5 cursor-pointer transform transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-white/10 hover:z-10"
+							onClick={() => (window.location.href = `/movie/${movie.id}`)}
 						>
-							<picture className="opacity-95 -z-10">
-								<source
-									srcSet={getImageURL(
-										popularMovies[1].backdrop_path,
-										"max"
-									)}
-									sizes="100vh"
-									media="(min-width: 1024px)"
-								/>
-								<img
-									src="https://via.placeholder.com/640x360"
-									sizes="100vh"
-									alt="Placeholder"
-									style={{
-										position: "absolute",
-										top: "50%",
-										left: "50%",
-										height: "100%",
-										width: "100%",
-										transform: "translate(-50%, -50%)",
-										objectFit: "cover",
-										objectPosition: "center",
-									}}
-								/>
-							</picture>
-							<div className="absolute bottom-4 left-4 h-56 w-[45%]">
-								<div className="glass-card glass-border">
-									<div className="flex flex-col w-full h-full px-2">
-										<div className="flex justify-between pt-3 px-1">
-											<h2 className="font-bold text-xl">
-												{
-													popularMovies[1]
-														.original_title
-												}
-											</h2>
-											<RatingIMDB>
-												8.9
-											</RatingIMDB>
-											<RatingRoTo>
-												90%
-											</RatingRoTo>
-										</div>
-										<p className="flex flex-grow items-center">
-											{popularMovies[1].overview}
-										</p>
-									</div>
-								</div>
+							<MoviePoster
+								movie={movie}
+								className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-80"
+								imageQualityKey="mid"
+							/>
+							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+								<h3 className="text-white font-bold text-sm md:text-base line-clamp-2">{movie.title}</h3>
+								<p className="text-white/60 text-xs mt-1">{(movie.release_date || "").substring(0, 4)}</p>
 							</div>
 						</div>
-					)}
+					))}
 				</div>
-				<div className="py-4">
-					<div>
-						<div className="mb-8">
-							<TwoEmblaCarousel slides={[...popularMovies.slice(0, 15)]} direction="forward" options={{ loop: true, dragFree: true }} />
-						</div>
-						<div className="mb-8">
-							<TwoEmblaCarousel slides={[...popularMovies.slice(15, 30)]} direction="backward" options={{ loop: true, dragFree: true }} />
-						</div>
-						<div className="mb-8">
-							<TwoEmblaCarousel slides={[...popularMovies.slice(30, 45)]} direction="forward" options={{ loop: true, dragFree: true }} />
-						</div>
+
+				{loading && (
+					<div className="py-20 flex justify-center">
+						<div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-white"></div>
 					</div>
-				</div>
+				)}
 			</div>
 		</div>
 	);
 }
-
-export default Popular;

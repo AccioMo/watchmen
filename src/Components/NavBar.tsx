@@ -12,11 +12,10 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
     const [isScrolled, setIsScrolled] = useState(false);
 
     const navLinks = [
-        { label: 'Watchmen', href: '/' },
-        { label: 'Funny', href: '/funny' },
-        { label: 'Chill', href: '/chill' },
-        { label: 'Romance', href: '/romance' },
-        { label: 'Action', href: '/action' },
+        { label: 'N4tflix', href: '/' },
+        { label: 'Explore', href: '/explore' },
+        { label: 'Popular', href: '/popular' },
+        { label: 'New', href: '/new' },
     ];
 
     useEffect(() => {
@@ -62,8 +61,8 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`text-base font-medium transition-colors duration-200 
-									${link.label === 'Watchmen' ? 'text-xl font-bold tracking-tight text-white mr-2' : ''}
+                                className={`text-base font-medium transition-colors duration-200 outline-none border-none hover:border-none focus:outline-none decoration-0 no-underline
+									${link.label === 'N4tflix' ? 'text-xl font-bold tracking-tight text-white mr-2' : ''}
 									${pathname === link.href ? 'text-white' : 'text-white/60 hover:text-white'}
 								`}
                             >
@@ -72,14 +71,36 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
                         ))}
                     </nav>
 
-                    {/* Search Icon (Minimal) */}
-                    <div className="ml-auto">
+                    {/* Right Side Actions */}
+                    <div className="ml-auto flex items-center gap-4">
+                        {/* Search Icon */}
                         <button
                             onClick={() => setIsSearchOpen(true)}
                             className="text-white/60 hover:text-white transition-colors p-2"
                         >
                             <img src="/find.svg" alt="Search" className="w-5 h-5 opacity-80" />
                         </button>
+
+                        {/* Watchlist Icon */}
+                        <Link
+                            href="/watchlist"
+                            className={`text-white/60 hover:text-white transition-colors p-2 ${pathname === '/watchlist' ? 'text-white' : ''}`}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-5 h-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                                />
+                            </svg>
+                        </Link>
                     </div>
                 </div>
             </div>

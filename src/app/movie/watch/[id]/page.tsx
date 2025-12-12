@@ -8,10 +8,11 @@ import {
 	getSimilarMovies,
 	Movie
 } from "../../../../API/TMDB";
-import Button from "../../../Components/Button";
-import InteractiveMovieBox from "../../../Components/InteractiveMovieBox";
-import CastList from "../../../Components/CastList";
-import BehindTheScenes from "../../../Components/BehindTheScenes";
+import Button from "../../../../Components/Button";
+import InteractiveMovieBox from "../../../../Components/InteractiveMovieBox";
+import CastList from "../../../../Components/CastList";
+import BehindTheScenes from "../../../../Components/BehindTheScenes";
+import { useWatchlist } from "../../../../context/WatchlistContext";
 
 interface CastMember {
 	id: number;
@@ -43,6 +44,7 @@ export default function WatchPage() {
 	const [crew, setCrew] = useState<CrewMember[]>([]);
 	const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
 	const [theatreMode, setTheatreMode] = useState(false);
+	const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
 
 	useEffect(() => {
 		const initWatch = async () => {
@@ -60,6 +62,7 @@ export default function WatchPage() {
 
 				setTmdbMovie(tmdbData);
 				setMovieTitle(tmdbData.title);
+				document.title = `Watch ${tmdbData.title}`;
 
 				// Fetch extras
 				Promise.all([
@@ -113,16 +116,16 @@ export default function WatchPage() {
 
 			<div className="container mx-auto px-4 md:px-8 pt-24 lg:pt-16">
 
-				<div className={theatreMode ? 'max-w-5xl mx-auto mb-12 relative z-50 group' : 'max-w-5xl mx-auto mb-12 relative z-50 group'}>
+				<div className={theatreMode ? 'max-w-7xl mx-auto mb-12 relative z-50 group transition-all duration-500' : 'max-w-5xl mx-auto mb-12 relative z-50 group transition-all duration-500'}>
 					<div className={`aspect-video w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 bg-black relative`}>
 						<button
 							onClick={() => setTheatreMode(!theatreMode)}
 							className="absolute top-4 right-4 z-20 bg-black/50 hover:bg-black/80 text-white/80 hover:text-white px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md border border-white/10 transition-all opacity-0 group-hover:opacity-100"
 						>
-							{theatreMode ? 'Lights On' : 'Dim Lights'}
+							Theatre Mode
 						</button>
 						<iframe
-							src={`https://vidsrc.xyz/embed/movie/${tmdbMovie?.id}`}
+							src={`https://vidsrc-embed.ru/embed/movie/${tmdbMovie?.id}`}
 							className="w-full h-full border-0"
 							allowFullScreen
 							referrerPolicy="origin"
@@ -141,7 +144,35 @@ export default function WatchPage() {
 					<div className="lg:col-span-3 space-y-12">
 						{tmdbMovie && (
 							<div className="animate-fade-in-up">
-								<h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{movieTitle}</h1>
+								<div className="flex items-center justify-between mb-4">
+									<h1 className="text-4xl md:text-5xl font-bold text-white">{movieTitle}</h1>
+									<Button
+										variant={tmdbMovie && isInWatchlist(tmdbMovie.id) ? "primary" : "secondary"}
+										size="sm"
+										onClick={() => {
+											if (tmdbMovie) {
+												if (isInWatchlist(tmdbMovie.id)) {
+													removeFromWatchlist(tmdbMovie.id);
+												} else {
+													addToWatchlist(tmdbMovie);
+												}
+											}
+										}}
+										icon={
+											tmdbMovie && isInWatchlist(tmdbMovie.id) ? (
+												<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+													<path d="M5 13l4 4L19 7" />
+												</svg>
+											) : (
+												<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+												</svg>
+											)
+										}
+									>
+										{tmdbMovie && isInWatchlist(tmdbMovie.id) ? "In Watchlist" : "Add to Watchlist"}
+									</Button>
+								</div>
 								<div className="flex flex-wrap items-center gap-4 text-sm text-white/60 mb-6">
 									{tmdbMovie.release_date && (
 										<span className="bg-white/10 px-3 py-1 rounded text-white/90 font-medium">

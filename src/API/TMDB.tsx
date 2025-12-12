@@ -296,6 +296,53 @@ const searchMovie = async (query: string) => {
     }
 };
 
+
+interface DiscoverOptions {
+    sort_by?: string;
+    with_genres?: string;
+    primary_release_year?: number;
+    "primary_release_date.gte"?: string;
+    "primary_release_date.lte"?: string;
+    "vote_average.gte"?: number;
+    "vote_average.lte"?: number;
+    "vote_count.gte"?: number;
+    "with_runtime.gte"?: number;
+    "with_runtime.lte"?: number;
+    page?: number;
+}
+
+const discoverMovies = async (options: DiscoverOptions = {}): Promise<Movie[]> => {
+    if (!TMDB_ACCESS_TOKEN) {
+        console.error("TMDB Access Token is not configured");
+        return [];
+    }
+
+    const params = new URLSearchParams({
+        language: "en-US",
+        page: (options.page || 1).toString(),
+        include_adult: "false",
+        include_video: "false",
+        ...Object.fromEntries(
+            Object.entries(options).map(([key, value]) => [key, value?.toString() || ""])
+        )
+    });
+
+    // Remove empty params
+    for (const [key, value] of Array.from(params.entries())) {
+        if (!value) params.delete(key);
+    }
+
+    return tmdbAPI
+        .get(`discover/movie?${params.toString()}`)
+        .then((response) => {
+            return response?.data?.results || [];
+        })
+        .catch((error) => {
+            console.error("Error discovering movies:", error);
+            return [];
+        });
+};
+
 export {
     tmdbAPI,
     getTMDBMoviesBy,
@@ -313,4 +360,5 @@ export {
     getSimilarMovies,
     getMovieVideos,
     searchMovie,
+    discoverMovies,
 };

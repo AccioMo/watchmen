@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Button from './Components/Button';
+import Button from '../Components/Button';
 
 export default function NotFound() {
 	return (
@@ -12,7 +12,7 @@ export default function NotFound() {
 						Oops! The page you're looking for doesn't exist. It might have been moved or deleted.
 					</p>
 				</div>
-				
+
 				<div className="flex flex-col sm:flex-row gap-4 justify-center">
 					<Link href="/">
 						<Button variant="primary" size="lg">

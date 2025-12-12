@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getPersonDetails, getPersonCombinedCredits, getImageURL } from "../../../API/TMDB";
-import Button from "../../Components/Button";
-import InteractiveMovieBox from "../../Components/InteractiveMovieBox";
+import Button from "../../../Components/Button";
+import InteractiveMovieBox from "../../../Components/InteractiveMovieBox";
 import Image from "next/image";
 
 // Define simpler interfaces for components if not exported
@@ -54,6 +54,7 @@ export default function PersonPage() {
 				]);
 
 				setPerson(detailsData);
+				document.title = `${detailsData.name} - N4tflix`;
 
 				// Process credits: deduplicate and sort by popularity/date
 				// We'll focus on CAST for acting, or CREW if they are a director

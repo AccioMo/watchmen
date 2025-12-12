@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
-import { getImageURL, Movie } from "../../API/TMDB";
+import { getImageURL, Movie } from "../API/TMDB";
 
 type Props = {
     movie: Movie;
@@ -47,24 +47,13 @@ const MoviePoster: React.FC<Props> = ({ movie, className = "", imageQualityKey =
     }, []);
 
     const placeholder = (
-        <div className="h-full w-full flex items-center justify-center bg-gradient-to-tr from-neutral-800 via-neutral-700 to-neutral-900 rounded-xl text-white">
-            <div className="flex flex-col items-center gap-3 p-6 text-center">
-                <svg className="w-16 h-16 text-white/90 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <path d="M7 21v-4"></path>
-                    <path d="M17 21v-4"></path>
-                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                </svg>
-                <div className="max-w-xs">
-                    <h4 className="font-semibold text-white">{movie.title || 'No preview available'}</h4>
-                    <p className="text-xs text-white/70 line-clamp-3 mt-1">{movie.overview || 'Could not load preview.'}</p>
-                </div>
-            </div>
+        <div className="h-full w-full flex items-center justify-center bg-neutral-800 text-neutral-600">
+            <div className="w-12 h-12 rounded-full bg-neutral-700/50" />
         </div>
     );
 
     return (
-        <div ref={containerRef} className={`relative rounded-xl transition-all duration-300 h-full w-full group shadow-xl cursor-pointer ${className}`} onClick={handleClick}>
+        <div ref={containerRef} className={`relative transition-all duration-300 h-full w-full group shadow-xl cursor-pointer ${className}`} onClick={handleClick}>
             {/* Hover overlay */}
             <div className="select-none h-full w-full border-none bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 top-0 left-0 absolute z-10 transition-all duration-300">
                 <div className="flex items-end p-4 h-full w-full">
@@ -95,7 +84,7 @@ const MoviePoster: React.FC<Props> = ({ movie, className = "", imageQualityKey =
                     />
                 ) : (
                     // Keep an empty visual placeholder until the image is in view to avoid layout shift.
-                    <div aria-hidden className="h-full w-full rounded-xl bg-neutral-900" />
+                    <div aria-hidden className="h-full w-full bg-neutral-900" />
                 )
             )}
 
