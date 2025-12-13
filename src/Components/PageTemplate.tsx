@@ -3,12 +3,15 @@
 import React from "react";
 import InfiniteMovieGrid from "./InfiniteMovieGrid";
 
+import { Movie } from "../API/TMDB";
+
 type Props = {
-	genres: string[]; // Keeping the prop for compatibility, but we might only use the first one or mix them.
+	genres?: string[]; // Optional now
+	fetchStrategy?: (page: number) => Promise<Movie[]>;
 	title?: string;
 };
 
-const PageTemplate: React.FC<Props> = ({ genres, title }) => {
+const PageTemplate: React.FC<Props> = ({ genres, fetchStrategy, title }) => {
 	React.useEffect(() => {
 		if (title) {
 			document.title = title + " - Watchmen";
@@ -17,8 +20,10 @@ const PageTemplate: React.FC<Props> = ({ genres, title }) => {
 
 	// For the infinite grid, we typically focus on one main genre or a mix.
 	// If multiple genres are passed, we might pass the first one or handle it in the grid.
-	// Given the previous code passed e.g. ["Action"], we will use the first one.
-	const mainGenre = genres[0] || "Popular";
+	const mainGenre = genres ? genres[0] : undefined;
+
+	// Fallback: If no genre and no fetchStrategy, maybe default to "Popular"?
+	// But specific pages will provide one or the other.
 
 	return (
 		<div className="min-h-screen bg-black animated-bg relative">
@@ -27,7 +32,7 @@ const PageTemplate: React.FC<Props> = ({ genres, title }) => {
 
 			{/* Main Content */}
 			<div className="w-full pt-0">
-				<InfiniteMovieGrid genre={mainGenre} />
+				<InfiniteMovieGrid genre={mainGenre} fetchStrategy={fetchStrategy} />
 			</div>
 
 			{/* Footer is now inside the grid scroll or fixed? 

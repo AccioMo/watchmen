@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Button from "../../../Components/Button";
+import { getReviewById } from "../../../API/TMDB";
 
 interface Review {
 	id: string;
@@ -26,29 +27,13 @@ export default function ReviewPage() {
 
 	useEffect(() => {
 		const fetchReview = async () => {
-			// TMDB API doesn't have a direct endpoint for a single review by ID, 
-			// so we typically have to pass the movie ID and find the review in the list.
-			// However, since the user asked for a "page to read the full review", we can assume
-			// we might pass the movie ID as a query param or structured differently.
-			// FOR SIMPLICITY given current architecture: We will assume we are passed the MOVIE ID 
-			// and we will show ALL reviews or a specific one if possible. 
-			// BUT, the URL structure is `review/[id]`. This `id` is usually the Review ID in TMDB.
-			// Let's try to fetch via the generic review endpoint if available or handle it.
-
-			// Actually, TMDB *does* have a /review/{review_id} endpoint.
-			// Let's implement that specific fetch here directly or update API.
-			// Since I didn't add `getReviewById` in API, I'll add a direct fetch here for now using the key.
-
 			if (!id) return;
 
 			try {
-				const response = await fetch(
-					`https://api.themoviedb.org/3/review/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
-				);
+				const data = await getReviewById(id);
 
-				if (response.ok) {
-					const data = await response.json();
-					setReview(data);
+				if (data) {
+					setReview(data as Review);
 				}
 			} catch (error) {
 				console.error("Failed to fetch review", error);

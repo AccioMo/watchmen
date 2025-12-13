@@ -11,8 +11,9 @@ import {
 	getSimilarMovies,
 	getMovieReviews,
 	getMovieVideos,
-	searchMovie
+	searchMovie,
 } from "../../../API/TMDB";
+import { getTasteDiveRecommendations } from "../../../API/TasteDive";
 import { useWatchlist } from "../../../context/WatchlistContext";
 
 import Button from "../../../Components/Button";
@@ -65,6 +66,10 @@ export default function MoviePage() {
 	const [trailerKey, setTrailerKey] = useState<string | null>(null);
 	const [showTrailer, setShowTrailer] = useState(false);
 	const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
+
+	const [recSource, setRecSource] = useState<'TMDB' | 'TasteDive'>('TMDB');
+	const [tasteDiveMovies, setTasteDiveMovies] = useState<Movie[]>([]);
+	const [isLoadingTasteDive, setIsLoadingTasteDive] = useState(false);
 
 
 
@@ -126,6 +131,19 @@ export default function MoviePage() {
 			fetchMovieData();
 		}
 	}, [slug]);
+
+	// Effect to handle TasteDive fetching when source changes or movie changes
+	useEffect(() => {
+		if (recSource === 'TasteDive' && movie && tasteDiveMovies.length === 0 && !isLoadingTasteDive) {
+			const fetchTasteDive = async () => {
+				setIsLoadingTasteDive(true);
+				const results = await getTasteDiveRecommendations(movie.title);
+				setTasteDiveMovies(results);
+				setIsLoadingTasteDive(false);
+			};
+			fetchTasteDive();
+		}
+	}, [recSource, movie]);
 
 	const formatRuntime = (minutes: number) => {
 		const hours = Math.floor(minutes / 60);
@@ -379,20 +397,64 @@ export default function MoviePage() {
 
 				{/* SIMILAR MOVIES SECTION */}
 				{
-					similarMovies.length > 0 && (
+					(similarMovies.length > 0 || recSource === 'TasteDive') && (
 						<section className="container mx-auto px-6 md:px-12 pb-20">
-							<h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
-								<span className="w-1 h-8 bg-red-500 rounded-full"></span>
-								More Like This
-							</h2>
+							<div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+								<h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+									<span className="w-1 h-8 bg-red-500 rounded-full"></span>
+									More Like This
+								</h2>
+
+								{/* Source Selector */}
+								<div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 w-fit">
+									<button
+										onClick={() => setRecSource('TMDB')}
+										className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${recSource === 'TMDB'
+											? 'bg-white/10 text-white shadow-sm'
+											: 'text-white/60 hover:text-white hover:bg-white/5'
+											}`}
+									>
+										TMDB
+									</button>
+									<button
+										onClick={() => setRecSource('TasteDive')}
+										className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${recSource === 'TasteDive'
+											? 'bg-white/10 text-white shadow-sm'
+											: 'text-white/60 hover:text-white hover:bg-white/5'
+											}`}
+									>
+										TasteDive
+									</button>
+								</div>
+							</div>
+
 							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-								{similarMovies.map((movie) => (
-									<InteractiveMovieBox
-										key={movie.id}
-										movie={movie}
-										className="w-full aspect-[2/3] rounded-xl"
-									/>
-								))}
+								{recSource === 'TMDB' ? (
+									similarMovies.map((movie) => (
+										<InteractiveMovieBox
+											key={movie.id}
+											movie={movie}
+											className="w-full aspect-[2/3] rounded-xl"
+										/>
+									))
+								) : isLoadingTasteDive ? (
+									// Loading skeletons for TasteDive
+									[...Array(5)].map((_, i) => (
+										<div key={i} className="w-full aspect-[2/3] bg-white/5 rounded-xl animate-pulse"></div>
+									))
+								) : tasteDiveMovies.length > 0 ? (
+									tasteDiveMovies.map((movie) => (
+										<InteractiveMovieBox
+											key={movie.id}
+											movie={movie}
+											className="w-full aspect-[2/3] rounded-xl"
+										/>
+									))
+								) : (
+									<div className="col-span-full py-10 text-center text-white/40">
+										No recommendations found from TasteDive.
+									</div>
+								)}
 							</div>
 						</section>
 					)

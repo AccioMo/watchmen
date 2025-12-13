@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getImageURL, Movie } from "../API/TMDB";
+import { getImageURL, Movie, searchMovie } from "../API/TMDB";
 import Image from "next/image";
 
 interface SearchProps {
@@ -66,21 +66,8 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 
 			setLoading(true);
 			try {
-				// Search using the TMDB search endpoint
-				const response = await fetch(
-					`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&page=1`,
-					{
-						headers: {
-							Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`,
-							"Content-Type": "application/json",
-						},
-					}
-				);
-
-				if (response.ok) {
-					const data = await response.json();
-					setResults(data.results.slice(0, 8)); // Limit to 8 results
-				}
+				const movies = await searchMovie(query);
+				setResults(movies.slice(0, 8));
 			} catch (error) {
 				console.error("Search error:", error);
 			} finally {

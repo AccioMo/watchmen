@@ -16,6 +16,7 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
         { label: 'Explore', href: '/explore' },
         { label: 'Popular', href: '/popular' },
         { label: 'New', href: '/new' },
+        { label: 'Top', href: '/top' },
     ];
 
     useEffect(() => {

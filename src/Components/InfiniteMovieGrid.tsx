@@ -10,6 +10,7 @@ import MoviePoster from "./MoviePoster";
 
 type Props = {
 	genre?: string;
+	fetchStrategy?: (page: number) => Promise<Movie[]>;
 	// Controlled props
 	movies?: Movie[];
 	onLoadMore?: () => void;
@@ -21,6 +22,7 @@ type Props = {
 
 const InfiniteMovieGrid: React.FC<Props> = ({
 	genre,
+	fetchStrategy,
 	movies: controlledMovies,
 	onLoadMore,
 	hasMore: controlledHasMore,
@@ -45,17 +47,27 @@ const InfiniteMovieGrid: React.FC<Props> = ({
 
 	// Internal Fetch Logic
 	const fetchInternalMovies = useCallback(async () => {
-		if (internalLoading || !internalHasMore || !genre) return;
+		if (internalLoading || !internalHasMore) return;
+		if (!genre && !fetchStrategy) return;
+
 		setInternalLoading(true);
 
 		try {
-			// Fetch 2 pages at once for better grid filling
-			const [batch1, batch2] = await Promise.all([
-				getTMDBMoviesByGenreName(genre, page),
-				getTMDBMoviesByGenreName(genre, page + 1)
-			]);
+			let newMovies: Movie[] = [];
 
-			const newMovies = [...batch1, ...batch2];
+			if (fetchStrategy) {
+				const [batch1, batch2] = await Promise.all([
+					fetchStrategy(page),
+					fetchStrategy(page + 1)
+				]);
+				newMovies = [...batch1, ...batch2];
+			} else if (genre) {
+				const [batch1, batch2] = await Promise.all([
+					getTMDBMoviesByGenreName(genre, page),
+					getTMDBMoviesByGenreName(genre, page + 1)
+				]);
+				newMovies = [...batch1, ...batch2];
+			}
 
 			if (newMovies.length === 0) {
 				setInternalHasMore(false);
@@ -72,15 +84,15 @@ const InfiniteMovieGrid: React.FC<Props> = ({
 		} finally {
 			setInternalLoading(false);
 		}
-	}, [genre, page, internalLoading, internalHasMore]);
+	}, [genre, fetchStrategy, page, internalLoading, internalHasMore]);
 
 	// Initial load for internal mode
 	useEffect(() => {
-		if (!isControlled && !initialLoadDone.current && genre) {
+		if (!isControlled && !initialLoadDone.current && (genre || fetchStrategy)) {
 			initialLoadDone.current = true;
 			fetchInternalMovies();
 		}
-	}, [isControlled, genre, fetchInternalMovies]);
+	}, [isControlled, genre, fetchStrategy, fetchInternalMovies]);
 
 	// Load More Trigger
 	const handleLoadMore = useCallback(() => {

@@ -43,8 +43,8 @@ export default function ExplorePage() {
 	// Filters
 	const [yearRange, setYearRange] = useState<[number, number]>([1990, 2024]);
 	const [ratingRange, setRatingRange] = useState<[number, number]>([5, 10]);
-	const [minVotes, setMinVotes] = useState<[number, number]>([0, 500]);
-	const [sortBy, setSortBy] = useState("popularity.desc");
+	const [minVotes, setMinVotes] = useState<[number, number]>([4000, 5000]);
+	const [sortBy, setSortBy] = useState("revenue.desc");
 
 	const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
 
