@@ -6,7 +6,8 @@ import {
 	getMovieById,
 	getMovieCredits,
 	getSimilarMovies,
-	Movie
+	Movie,
+	MovieDetails
 } from "../../../../API/TMDB";
 import Button from "../../../../Components/Button";
 import InteractiveMovieBox from "../../../../Components/InteractiveMovieBox";
@@ -39,7 +40,7 @@ export default function WatchPage() {
 	const [error, setError] = useState<string | null>(null);
 
 	const [movieTitle, setMovieTitle] = useState<string>("");
-	const [tmdbMovie, setTmdbMovie] = useState<any>(null);
+	const [tmdbMovie, setTmdbMovie] = useState<MovieDetails | null>(null);
 	const [cast, setCast] = useState<CastMember[]>([]);
 	const [crew, setCrew] = useState<CrewMember[]>([]);
 	const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
@@ -80,9 +81,10 @@ export default function WatchPage() {
 
 				setLoading(false);
 
-			} catch (err: any) {
+			} catch (err: unknown) {
 				console.error(err);
-				setError(err.message || "Something went wrong.");
+				const message = err instanceof Error ? err.message : "Something went wrong.";
+				setError(message);
 				setLoading(false);
 			}
 		};
@@ -189,7 +191,7 @@ export default function WatchPage() {
 
 								{tmdbMovie.genres && (
 									<div className="flex flex-wrap gap-2 mb-6">
-										{tmdbMovie.genres.map((g: any) => (
+										{tmdbMovie.genres.map((g: { id: number; name: string }) => (
 											<span key={g.id || g.name} className="text-sm border border-white/10 px-3 py-1 rounded-full text-white/70">
 												{g.name}
 											</span>

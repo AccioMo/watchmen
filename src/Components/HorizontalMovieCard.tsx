@@ -18,7 +18,7 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
 
     const fetchTrailer = useCallback(async (id: number) => {
         const videos = await getMovieVideos(id);
-        const trailer = videos.results?.find((v: any) => v.type === "Trailer" && v.site === "YouTube");
+        const trailer = videos.results?.find((v: { type: string; site: string; key: string }) => v.type === "Trailer" && v.site === "YouTube");
         setTrailerKey(trailer?.key || null);
     }, []);
 

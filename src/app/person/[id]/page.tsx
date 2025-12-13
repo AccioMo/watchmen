@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getPersonDetails, getPersonCombinedCredits, getImageURL } from "../../../API/TMDB";
+import { getPersonDetails, getPersonCombinedCredits, getImageURL, Movie } from "../../../API/TMDB";
 import Button from "../../../Components/Button";
 import InteractiveMovieBox from "../../../Components/InteractiveMovieBox";
 import Image from "next/image";
@@ -32,6 +32,14 @@ interface Credit {
 	job?: string;
 	order?: number; // for sorting cast
 	vote_count: number; // needed for InteractiveMovieBox
+	original_title?: string;
+	original_name?: string;
+	original_language?: string;
+	backdrop_path?: string;
+	genre_ids?: number[];
+	adult?: boolean;
+	video?: boolean;
+	popularity?: number;
 }
 
 export default function PersonPage() {
@@ -54,7 +62,7 @@ export default function PersonPage() {
 				]);
 
 				setPerson(detailsData);
-				document.title = `${detailsData.name} - N4tflix`;
+				document.title = `${detailsData.name} - Watchmen`;
 
 				// Process credits: deduplicate and sort by popularity/date
 				// We'll focus on CAST for acting, or CREW if they are a director
@@ -65,18 +73,18 @@ export default function PersonPage() {
 				// Filter for items with posters and title (movies mostly)
 				const seen = new Set();
 				const filtered = relevantCredits
-					.filter((c: any) => {
+					.filter((c: Credit) => {
 						if (seen.has(c.id)) return false;
 						seen.add(c.id);
 						return true;
 					})
-					.filter((c: any) => (c.poster_path && (c.title || c.name)))
-					.sort((a: any, b: any) => (b.vote_count || 0) - (a.vote_count || 0)) // Sort by popularity approx
+					.filter((c: Credit) => (c.poster_path && (c.title || c.name)))
+					.sort((a: Credit, b: Credit) => (b.vote_count || 0) - (a.vote_count || 0)) // Sort by popularity approx
 					.slice(0, 20); // Top 20
 
 				// Add 'title' if missing (for TV shows using 'name') to match InteractiveMovieBox expectation partially
 				// Note: InteractiveMovieBox expects 'Movie' type. We need to adapt `Credit` to `Movie`.
-				const adaptedCredits = filtered.map((c: any) => ({
+				const adaptedCredits = filtered.map((c: Credit) => ({
 					...c,
 					title: c.title || c.name,
 					release_date: c.release_date || c.first_air_date,
@@ -177,10 +185,10 @@ export default function PersonPage() {
 					Known For
 				</h2>
 				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-					{credits.map((credit: any) => (
+					{credits.map((credit: Credit) => (
 						<InteractiveMovieBox
 							key={credit.id}
-							movie={credit}
+							movie={credit as unknown as Movie}
 							className="w-full aspect-[2/3] rounded-xl"
 						/>
 					))}

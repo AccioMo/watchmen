@@ -27,6 +27,18 @@ export interface Movie {
     video: boolean;
 }
 
+export interface MovieDetails extends Movie {
+    runtime: number;
+    genres: { id: number; name: string }[];
+    production_companies: { id: number; name: string; logo_path?: string }[];
+    production_countries: { iso_3166_1: string; name: string }[];
+    spoken_languages: { iso_639_1: string; name: string }[];
+    budget: number;
+    revenue: number;
+    tagline: string;
+    status: string;
+}
+
 const tmdbAPI = axios.create({
     baseURL: "https://api.themoviedb.org/3/",
     headers: {
@@ -155,7 +167,7 @@ const getTMDBMoviesByGenre = async (
  * @param movieId - The TMDB movie ID
  * @returns Movie details or null if not found
  */
-const getMovieById = async (movieId: number | string): Promise<Movie | null> => {
+const getMovieById = async (movieId: number | string): Promise<MovieDetails | null> => {
     if (!movieId) return null;
 
     if (!TMDB_ACCESS_TOKEN) {

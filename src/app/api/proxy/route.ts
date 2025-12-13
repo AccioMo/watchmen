@@ -114,9 +114,10 @@ export async function GET(request: NextRequest) {
 			headers: getProxyHeaders(upstreamResponse.headers, contentType || 'application/octet-stream'),
 		});
 
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Proxy error:', error);
-		return new NextResponse(`Proxy error: ${error.message}`, { status: 500 });
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+		return new NextResponse(`Proxy error: ${errorMessage}`, { status: 500 });
 	}
 }
 

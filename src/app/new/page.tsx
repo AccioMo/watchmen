@@ -10,12 +10,7 @@ export default function New() {
 	const [hasMore, setHasMore] = useState(true);
 	const pageRef = useRef(1);
 
-	useEffect(() => {
-		document.title = "New Releases";
-		fetchMovies(1);
-	}, []);
-
-	const fetchMovies = async (pageNum: number) => {
+	const fetchMovies = useCallback(async (pageNum: number) => {
 		if (loading) return;
 		setLoading(true);
 		try {
@@ -30,7 +25,12 @@ export default function New() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [loading]);
+
+	useEffect(() => {
+		document.title = "New Releases";
+		fetchMovies(1);
+	}, [fetchMovies]);
 
 	const handleScroll = useCallback(() => {
 		if (
@@ -42,7 +42,7 @@ export default function New() {
 			pageRef.current += 1;
 			fetchMovies(pageRef.current);
 		}
-	}, [hasMore, loading]);
+	}, [hasMore, loading, fetchMovies]);
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll);

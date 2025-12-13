@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Slider from "../../Components/Slider";
 import Chip from "../../Components/Chip";
 import Dropdown from "../../Components/Dropdown";
@@ -48,18 +48,7 @@ export default function ExplorePage() {
 
 	const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
 
-	useEffect(() => {
-		const timeoutId = setTimeout(() => {
-			// Reset logic
-			setMovies([]);
-			setPage(1);
-			setHasMore(true);
-			fetchMovies(1, true);
-		}, 500);
-		return () => clearTimeout(timeoutId);
-	}, [yearRange, ratingRange, minVotes, sortBy, selectedGenres]);
-
-	const fetchMovies = async (pageNum: number, isNewFilter: boolean = false) => {
+	const fetchMovies = useCallback(async (pageNum: number, isNewFilter: boolean = false) => {
 		setLoading(true);
 		try {
 			const results = await discoverMovies({
@@ -86,7 +75,18 @@ export default function ExplorePage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [yearRange, ratingRange, minVotes, selectedGenres, sortBy]);
+
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			// Reset logic
+			setMovies([]);
+			setPage(1);
+			setHasMore(true);
+			fetchMovies(1, true);
+		}, 500);
+		return () => clearTimeout(timeoutId);
+	}, [fetchMovies]);
 
 	const loadMore = () => {
 		if (!loading && hasMore) {

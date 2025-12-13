@@ -1,18 +1,18 @@
 services:
-  N4tflix:
-    image: N4tflix:latest
-    container_name: N4tflix
+  Watchmen:
+    image: Watchmen:latest
+    container_name: Watchmen
     build:
       context: .
       target: dev
     ports:
       - "443:4000"
     networks:
-      - N4tflix_network
+      - Watchmen_network
     volumes:
       - .:/app
       - /app/node_modules
 
 networks:
-  N4tflix_network:
+  Watchmen_network:
     driver: bridge

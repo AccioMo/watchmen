@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand / Copyright */}
           <div className="text-center md:text-left">
             <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 mb-2">
-              N4tflix
+              Watchmen
             </h2>
             <p className="text-white/40 text-sm">
               © {new Date().getFullYear()} AccioMo. All rights reserved.

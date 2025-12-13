@@ -11,7 +11,7 @@ import { Outfit } from 'next/font/google'
 const outfit = Outfit({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-	title: 'N4tflix',
+	title: 'Watchmen',
 	description: 'Watch movies for free with friends',
 }
 

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import ActorCard from "./ActorCard";
 
 interface CastMember {

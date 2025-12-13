@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
 	getImageURL,
 	Movie,
+	MovieDetails,
 	getMovieById,
 	getMovieCredits,
 	getSimilarMovies,
@@ -21,26 +22,7 @@ import BehindTheScenes from "../../../Components/BehindTheScenes";
 import TrailerModal from "../../../Components/TrailerModal";
 import Image from "next/image";
 
-interface MovieDetails {
-	id: number;
-	title: string;
-	original_title: string;
-	overview: string;
-	backdrop_path: string;
-	poster_path: string;
-	release_date: string;
-	vote_average: number;
-	vote_count: number;
-	runtime: number;
-	genres: Array<{ id: number; name: string }>;
-	production_companies: Array<{ id: number; name: string; logo_path?: string }>;
-	production_countries: Array<{ iso_3166_1: string; name: string }>;
-	spoken_languages: Array<{ iso_639_1: string; name: string }>;
-	budget: number;
-	revenue: number;
-	tagline: string;
-	status: string;
-}
+
 
 interface CastMember {
 	id: number;
@@ -101,7 +83,7 @@ export default function MoviePage() {
 			setError(null);
 
 			try {
-				let movieData: any;
+				let movieData: MovieDetails | null = null;
 
 				if (/^\d+$/.test(slug)) {
 					movieData = await getMovieById(slug);
@@ -130,7 +112,7 @@ export default function MoviePage() {
 				setSimilarMovies(similarData.slice(0, 10));
 				setReviews(reviewsData.results?.slice(0, 5) || []);
 
-				const trailer = videosData.results?.find((v: any) => v.type === "Trailer" && v.site === "YouTube");
+				const trailer = videosData.results?.find((v: { type: string; site: string; key: string }) => v.type === "Trailer" && v.site === "YouTube");
 				setTrailerKey(trailer?.key || null);
 
 			} catch (err) {

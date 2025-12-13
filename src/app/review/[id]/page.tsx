@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getMovieReviews } from "../../../API/TMDB";
 import Button from "../../../Components/Button";
 
 interface Review {

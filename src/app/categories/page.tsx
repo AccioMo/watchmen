@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Categories - N4tflix',
+    title: 'Categories - Watchmen',
     description: 'Browse movies by category',
 };
 
