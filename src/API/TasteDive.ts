@@ -42,7 +42,6 @@ export const getTasteDiveRecommendations = async (query: string): Promise<Movie[
         });
 
         const data = response.data;
-        console.log(data);
         const results = data?.similar?.results || [];
 
         // Now resolve these names to TMDB objects

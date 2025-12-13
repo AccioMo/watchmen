@@ -101,7 +101,7 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 	if (!isVisible && !isOpen) return null;
 
 	return (
-		<div className={`fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+		<div className={`fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
 			{/* Backdrop */}
 			<div
 				className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300"

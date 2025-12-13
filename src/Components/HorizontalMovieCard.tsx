@@ -64,6 +64,7 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
     const minSwipeDistance = 50;
 
     const onTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+        if (showTrailer) return;
         setTouchEnd(null);
         if ('touches' in e) {
             setTouchStart(e.targetTouches[0].clientX);
@@ -210,7 +211,7 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
 
             {/* Arrow Navigation */}
             <button
-                onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                onClick={(e) => { e.stopPropagation(); if (!showTrailer) handlePrev(); }}
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 text-white/50 hover:text-white transition-colors p-4 hidden md:block"
             >
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -218,7 +219,7 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
                 </svg>
             </button>
             <button
-                onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                onClick={(e) => { e.stopPropagation(); if (!showTrailer) handleNext(); }}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 text-white/50 hover:text-white transition-colors p-4 hidden md:block"
             >
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
