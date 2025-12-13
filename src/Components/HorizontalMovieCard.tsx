@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { getImageURL, Movie, getMovieVideos } from "../API/TMDB";
+import LazyImage from "./LazyImage";
 import Button from "./Button";
 import TrailerModal from "./TrailerModal";
 
@@ -136,8 +137,9 @@ const HorizontalMovieCard: React.FC<Props> = ({ movies, className = "" }) => {
                                     {/* Vertical Poster */}
                                     <div className="hidden md:block relative w-48 lg:w-64 aspect-[2/3] rounded-lg shadow-2xl overflow-hidden flex-shrink-0">
                                         {posterUrl && (
-                                            <Image
+                                            <LazyImage
                                                 src={posterUrl}
+                                                placeholderSrc={getImageURL(movie.poster_path, 'tiny')}
                                                 alt={movie.title + " Poster"}
                                                 fill
                                                 className="object-cover"

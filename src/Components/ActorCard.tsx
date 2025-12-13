@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getImageURL } from "../API/TMDB";
+import LazyImage from "./LazyImage";
 
 type ActorCardProps = {
 	id: number;
@@ -22,8 +22,9 @@ const ActorCard: React.FC<ActorCardProps> = ({ id, name, character, profilePath 
 		>
 			<div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-white/5">
 				{profilePath ? (
-					<Image
-						src={getImageURL(profilePath, 'mid')}
+					<LazyImage
+						src={getImageURL(profilePath, 'min')}
+						placeholderSrc={getImageURL(profilePath, 'tiny')}
 						alt={name}
 						fill
 						className="object-cover transition-all duration-300 grayscale group-hover:grayscale-0"

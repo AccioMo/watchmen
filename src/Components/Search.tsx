@@ -188,7 +188,7 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 									</div>
 								) : (
 									results.map((movie: Movie, index) => {
-										const posterUrl = movie.poster_path ? getImageURL(movie.poster_path, 'small') : null;
+										const posterUrl = movie.poster_path ? getImageURL(movie.poster_path, 'tiny') : null;
 
 										return (
 											<div

@@ -37,7 +37,7 @@ export default function BehindTheScenes({ crew }: BehindTheScenesProps) {
                         <div className="w-12 h-12 rounded-full bg-white/10 flex-shrink-0 overflow-hidden group-hover:ring-2 group-hover:ring-purple-500 transition-all">
                             {member.profile_path ? (
                                 <Image
-                                    src={getImageURL(member.profile_path, 'small')}
+                                    src={getImageURL(member.profile_path, 'tiny')}
                                     alt={member.name}
                                     width={48}
                                     height={48}

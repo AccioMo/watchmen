@@ -1,8 +1,8 @@
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import Image from 'next/image';
+import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getImageURL, Movie } from "../API/TMDB";
+import LazyImage from "./LazyImage";
 
 type Props = {
 	movie: Movie;
@@ -12,37 +12,16 @@ type Props = {
 export const MovieBox: React.FC<Props> = ({ movie, className = "" }) => {
 	const router = useRouter();
 	const [imageErrored, setImageErrored] = useState(false);
-	const [isVisible, setIsVisible] = useState(false);
-	const containerRef = useRef<HTMLDivElement | null>(null);
+
 	const imageUrl = movie.poster_path ? getImageURL(movie.poster_path, 'mid') : '';
+	const tinyUrl = movie.poster_path ? getImageURL(movie.poster_path, 'tiny') : '';
 
 	const handleClick = useCallback(() => {
 		router.push(`/movie/${movie.id}`);
 	}, [router, movie.id]);
 
-	useEffect(() => {
-		const node = containerRef.current;
-		if (!node) return;
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						setIsVisible(true);
-						observer.disconnect();
-					}
-				});
-			},
-			{ rootMargin: '300px' }
-		);
-
-		observer.observe(node);
-		return () => observer.disconnect();
-	}, []);
-
 	return (
 		<div
-			ref={containerRef}
 			className={`relative w-full h-full bg-neutral-900 cursor-pointer group overflow-hidden ${className}`}
 			onClick={handleClick}
 		>
@@ -51,17 +30,15 @@ export const MovieBox: React.FC<Props> = ({ movie, className = "" }) => {
 					{movie.title}
 				</div>
 			) : (
-				isVisible && (
-					<Image
-						src={imageUrl}
-						alt={movie.title}
-						fill
-						className="object-cover"
-						sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 640px) 30vw, 45vw"
-						loading="lazy"
-						onError={() => setImageErrored(true)}
-					/>
-				)
+				<LazyImage
+					src={imageUrl}
+					placeholderSrc={tinyUrl}
+					alt={movie.title}
+					fill
+					className="object-cover"
+					sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 640px) 30vw, 45vw"
+					onError={() => setImageErrored(true)}
+				/>
 			)}
 
 			{/* Hover Gradient: Black (bottom) to Transparent (top) */}

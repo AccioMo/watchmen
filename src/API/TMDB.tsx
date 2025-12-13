@@ -198,6 +198,8 @@ const getImageURL = (imageID: string, quality: string): string => {
     switch (quality) {
         case "max":
             return `https://image.tmdb.org/t/p/original/${imageID}`;
+        case "tiny":
+            return `https://image.tmdb.org/t/p/w92/${imageID}`;
         case "min":
             return `https://image.tmdb.org/t/p/w500/${imageID}`;
         default:

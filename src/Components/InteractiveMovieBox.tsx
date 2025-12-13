@@ -2,9 +2,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getImageURL, Movie } from "../API/TMDB";
+import LazyImage from "./LazyImage";
 
 type Props = {
 	movie: Movie;
@@ -24,8 +24,9 @@ const InteractiveMovieBox: React.FC<Props> = ({ movie, className = "" }) => {
 		>
 			{/* Poster Image */}
 			<div className="relative w-full h-full">
-				<Image
+				<LazyImage
 					src={posterUrl}
+					placeholderSrc={getImageURL(movie.poster_path, 'tiny')}
 					alt={movie.title}
 					fill
 					className="object-cover"
