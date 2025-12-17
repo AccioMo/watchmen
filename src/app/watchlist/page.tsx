@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useWatchlist } from "../../context/WatchlistContext";
-import InteractiveMovieBox from "../../Components/InteractiveMovieBox";
+import LazyImage from "../../Components/LazyImage";
+import { getImageURL } from "../../API/TMDB";
 import Button from "../../Components/Button";
 import Link from "next/link";
 
@@ -89,7 +90,16 @@ export default function WatchlistPage() {
 
                             {/* Movie Card (Mini) */}
                             <div className="w-16 md:w-24 aspect-[2/3] flex-shrink-0">
-                                <InteractiveMovieBox movie={movie} className="w-full h-full rounded-lg" />
+                                <Link href={`/movie/${movie.id}`} className="block w-full h-full overflow-hidden rounded-lg relative">
+                                    <LazyImage
+                                        src={movie.poster_path ? getImageURL(movie.poster_path, 'mid') : ''}
+                                        placeholderSrc={movie.poster_path ? getImageURL(movie.poster_path, 'tiny') : ''}
+                                        alt={movie.title}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(min-width: 768px) 100px, 64px"
+                                    />
+                                </Link>
                             </div>
 
                             {/* Info */}
