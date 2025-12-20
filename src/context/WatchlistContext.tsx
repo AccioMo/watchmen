@@ -1,31 +1,42 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Movie } from "../API/TMDB";
+import { Movie, TVShow } from "../API/TMDB";
+import { WatchlistItem } from "./WatchlistTypes";
 
 interface WatchlistContextType {
-    watchlist: Movie[];
-    addToWatchlist: (movie: Movie) => void;
-    removeFromWatchlist: (movieId: number) => void;
-    isInWatchlist: (movieId: number) => boolean;
+    watchlist: WatchlistItem[];
+    addToWatchlist: (item: Movie | TVShow, type: "movie" | "tv") => void;
+    removeFromWatchlist: (id: number, type: "movie" | "tv") => void;
+    isInWatchlist: (id: number, type: "movie" | "tv") => boolean;
     moveMovie: (index: number, direction: "up" | "down") => void;
 }
 
 const WatchlistContext = createContext<WatchlistContextType | undefined>(undefined);
 
 export const WatchlistProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [watchlist, setWatchlist] = useState<Movie[]>([]);
+    const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
         const stored = localStorage.getItem("watchlist");
         if (stored) {
             try {
-                setWatchlist(JSON.parse(stored));
+                const parsed = JSON.parse(stored);
+                // Migration: if items don't have media_type, assume they are movies
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const migrated = parsed.map((item: any) => {
+                    if (!item.media_type) {
+                        return { ...item, media_type: "movie" };
+                    }
+                    return item;
+                });
+                setWatchlist(migrated);
             } catch (e) {
                 console.error("Failed to parse watchlist from local storage", e);
             }
         }
+
         setIsInitialized(true);
     }, []);
 
@@ -35,19 +46,19 @@ export const WatchlistProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
     }, [watchlist, isInitialized]);
 
-    const addToWatchlist = (movie: Movie) => {
+    const addToWatchlist = (item: Movie | TVShow, type: "movie" | "tv") => {
         setWatchlist((prev) => {
-            if (prev.some((m) => m.id === movie.id)) return prev;
-            return [...prev, movie];
+            if (prev.some((m) => m.id === item.id && m.media_type === type)) return prev;
+            return [...prev, { ...item, media_type: type } as WatchlistItem];
         });
     };
 
-    const removeFromWatchlist = (movieId: number) => {
-        setWatchlist((prev) => prev.filter((m) => m.id !== movieId));
+    const removeFromWatchlist = (id: number, type: "movie" | "tv") => {
+        setWatchlist((prev) => prev.filter((m) => !(m.id === id && m.media_type === type)));
     };
 
-    const isInWatchlist = (movieId: number) => {
-        return watchlist.some((m) => m.id === movieId);
+    const isInWatchlist = (id: number, type: "movie" | "tv") => {
+        return watchlist.some((m) => m.id === id && m.media_type === type);
     };
 
     const moveMovie = (index: number, direction: "up" | "down") => {

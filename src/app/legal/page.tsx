@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 
 export default function LegalPage() {
     useEffect(() => {
-        document.title = "Legal - Watchmen";
+        document.title = "Legal - DEMETR";
     }, []);
 
     return (
@@ -16,11 +16,11 @@ export default function LegalPage() {
 
                 <div className="space-y-6 text-lg text-white/80 leading-relaxed font-light">
                     <p>
-                        <strong>Watchmen</strong> does not host any files on its servers. All content is provided by non-affiliated third parties.
+                        <strong>DEMETR</strong> does not host any files on its servers. All content is provided by non-affiliated third parties.
                     </p>
 
                     <p>
-                        <strong>Watchmen</strong> does not accept responsibility for content hosted on third-party websites and does not have any involvement in the downloading/uploading of movies. We just act as a search engine indexer gathering links already available on the internet.
+                        <strong>DEMETR</strong> does not accept responsibility for content hosted on third-party websites and does not have any involvement in the downloading/uploading of movies. We just act as a search engine indexer gathering links already available on the internet.
                     </p>
 
                     <p>
@@ -29,7 +29,7 @@ export default function LegalPage() {
 
                     <div className="p-4 bg-white/5 border border-white/10 rounded-xl mt-8">
                         <p className="text-sm text-white/60">
-                            By using this site, you agree to this disclaimer and acknowledge that <strong>Watchmen</strong> is not liable for any third-party content.
+                            By using this site, you agree to this disclaimer and acknowledge that <strong>DEMETR</strong> is not liable for any third-party content.
                         </p>
                     </div>
                 </div>

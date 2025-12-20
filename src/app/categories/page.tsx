@@ -1,7 +1,8 @@
 import Link from 'next/link';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const metadata = {
-    title: 'Categories - Watchmen',
+    title: 'Categories - DEMETR',
     description: 'Browse movies by category',
 };
 

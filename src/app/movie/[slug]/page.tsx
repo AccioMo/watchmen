@@ -143,7 +143,7 @@ export default function MoviePage() {
 			};
 			fetchTasteDive();
 		}
-	}, [recSource, movie]);
+	}, [recSource, movie, isLoadingTasteDive, tasteDiveMovies.length]);
 
 	const formatRuntime = (minutes: number) => {
 		const hours = Math.floor(minutes / 60);
@@ -269,20 +269,20 @@ export default function MoviePage() {
 								Watch Now
 							</Button>
 							<Button
-								variant={isInWatchlist(movie.id) ? "primary" : "ghost"}
+								variant={isInWatchlist(movie.id, 'movie') ? "primary" : "ghost"}
 								size="lg"
 								onClick={() => {
-									if (isInWatchlist(movie.id)) {
-										removeFromWatchlist(movie.id);
+									if (isInWatchlist(movie.id, 'movie')) {
+										removeFromWatchlist(movie.id, 'movie');
 									} else {
 										// We need to map MovieDetails to Movie or use a subset.
 										// The context expects Movie (from API/TMDB), which matches reasonably well.
 										// We might need to ensure properties match or cast.
-										addToWatchlist(movie as unknown as Movie);
+										addToWatchlist(movie as unknown as Movie, 'movie');
 									}
 								}}
 								icon={
-									isInWatchlist(movie.id) ? (
+									isInWatchlist(movie.id, 'movie') ? (
 										<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
 											<path d="M5 13l4 4L19 7" />
 										</svg>
@@ -293,7 +293,7 @@ export default function MoviePage() {
 									)
 								}
 							>
-								{isInWatchlist(movie.id) ? "In Watchlist" : "Watchlist"}
+								{isInWatchlist(movie.id, 'movie') ? "In Watchlist" : "Watchlist"}
 							</Button>
 						</div>
 					</div >

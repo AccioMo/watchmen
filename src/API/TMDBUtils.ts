@@ -36,6 +36,34 @@ export interface MovieDetails extends Movie {
     status: string;
 }
 
+export interface TVShow {
+    id: number;
+    name: string;
+    overview: string;
+    backdrop_path: string;
+    poster_path: string;
+    first_air_date: string;
+    vote_average: number;
+    vote_count: number;
+    genre_ids: number[];
+    original_language: string;
+    original_name: string;
+    popularity: number;
+}
+
+export interface TVShowDetails extends TVShow {
+    episode_run_time: number[];
+    genres: { id: number; name: string }[];
+    networks: { id: number; name: string; logo_path?: string }[];
+    production_companies: { id: number; name: string; logo_path?: string }[];
+    production_countries: { iso_3166_1: string; name: string }[];
+    spoken_languages: { iso_639_1: string; name: string }[];
+    status: string;
+    tagline: string;
+    number_of_episodes: number;
+    number_of_seasons: number;
+}
+
 /**
  * Translate a genre name (case-insensitive) to its TMDB genre id.
  * Returns the id or null if not found.

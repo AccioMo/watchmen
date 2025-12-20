@@ -14,7 +14,7 @@ type Props = {
 const PageTemplate: React.FC<Props> = ({ genres, fetchStrategy, title }) => {
 	React.useEffect(() => {
 		if (title) {
-			document.title = title + " - Watchmen";
+			document.title = title + " - DEMETR";
 		}
 	}, [title]);
 

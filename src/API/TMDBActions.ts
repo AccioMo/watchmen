@@ -1,6 +1,6 @@
 "use server";
 
-import { Movie, MovieDetails, getGenreIdByName } from "./TMDBUtils";
+import { Movie, MovieDetails, TVShow, TVShowDetails, getGenreIdByName } from "./TMDBUtils";
 
 const TMDB_ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN
 const BASE_URL = "https://api.themoviedb.org/3/";
@@ -177,4 +177,55 @@ export const discoverMovies = async (options: DiscoverOptions = {}): Promise<Mov
 export const getReviewById = async (reviewId: string) => {
     if (!reviewId) return null;
     return fetchTMDB(`review/${reviewId}`);
+};
+
+// TV Show Actions
+
+export const getTMDBTVShowsBy = async (
+    by: string,
+    pageNum: number = 1
+): Promise<TVShow[]> => {
+    if (pageNum < 1 || by === "") return [];
+
+    return fetchTMDB(`tv/${by}`, { language: "en-US", page: pageNum.toString() })
+        .then((data) => data?.results || []);
+};
+
+export const getTMDBTVShowsByAiringToday = async (
+    pageNum: number = 1
+): Promise<TVShow[]> => {
+    return getTMDBTVShowsBy("airing_today", pageNum);
+};
+
+export const getTVShowById = async (tvId: number | string): Promise<TVShowDetails | null> => {
+    if (!tvId) return null;
+    return fetchTMDB(`tv/${tvId}`, { language: "en-US" });
+};
+
+export const getTVShowCredits = async (tvId: number | string) => {
+    if (!tvId) return { cast: [], crew: [] };
+    const data = await fetchTMDB(`tv/${tvId}/credits`, { language: "en-US" });
+    return data || { cast: [], crew: [] };
+};
+
+export const getSimilarTVShows = async (tvId: number | string): Promise<TVShow[]> => {
+    if (!tvId) return [];
+    const data = await fetchTMDB(`tv/${tvId}/similar`, { language: "en-US" });
+    return data?.results || [];
+};
+
+export const getTVShowVideos = async (tvId: number | string) => {
+    if (!tvId) return { results: [] };
+    const data = await fetchTMDB(`tv/${tvId}/videos`, { language: "en-US" });
+    return data || { results: [] };
+};
+
+export const searchTVShow = async (query: string): Promise<TVShow[]> => {
+    if (!query) return [];
+    const data = await fetchTMDB(`search/tv`, {
+        query: query,
+        language: "en-US",
+        page: "1"
+    });
+    return data?.results || [];
 };

@@ -12,7 +12,7 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
     const [isScrolled, setIsScrolled] = useState(false);
 
     const navLinks = [
-        { label: 'Watchmen', href: '/' },
+        { label: 'DEMETR', href: '/' },
         { label: 'Explore', href: '/explore' },
         { label: 'Popular', href: '/popular' },
         { label: 'New', href: '/new' },
@@ -63,7 +63,7 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
                                 key={link.href}
                                 href={link.href}
                                 className={`text-base font-medium transition-colors duration-200 outline-none border-none hover:border-none focus:outline-none decoration-0 no-underline
-									${link.label === 'Watchmen' ? 'text-xl font-bold tracking-tight text-white mr-2' : ''}
+									${link.label === 'DEMETR' ? 'text-xl font-bold tracking-tight text-white mr-2' : ''}
 									${pathname === link.href ? 'text-white' : 'text-white/60 hover:text-white'}
 								`}
                             >

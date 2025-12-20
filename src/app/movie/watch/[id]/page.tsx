@@ -149,19 +149,19 @@ export default function WatchPage() {
 								<div className="flex items-center justify-between mb-4">
 									<h1 className="text-4xl md:text-5xl font-bold text-white">{movieTitle}</h1>
 									<Button
-										variant={tmdbMovie && isInWatchlist(tmdbMovie.id) ? "primary" : "secondary"}
+										variant={tmdbMovie && isInWatchlist(tmdbMovie.id, 'movie') ? "primary" : "secondary"}
 										size="sm"
 										onClick={() => {
 											if (tmdbMovie) {
-												if (isInWatchlist(tmdbMovie.id)) {
-													removeFromWatchlist(tmdbMovie.id);
+												if (isInWatchlist(tmdbMovie.id, 'movie')) {
+													removeFromWatchlist(tmdbMovie.id, 'movie');
 												} else {
-													addToWatchlist(tmdbMovie);
+													addToWatchlist(tmdbMovie, 'movie');
 												}
 											}
 										}}
 										icon={
-											tmdbMovie && isInWatchlist(tmdbMovie.id) ? (
+											tmdbMovie && isInWatchlist(tmdbMovie.id, 'movie') ? (
 												<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
 													<path d="M5 13l4 4L19 7" />
 												</svg>
@@ -172,7 +172,7 @@ export default function WatchPage() {
 											)
 										}
 									>
-										{tmdbMovie && isInWatchlist(tmdbMovie.id) ? "In Watchlist" : "Add to Watchlist"}
+										{tmdbMovie && isInWatchlist(tmdbMovie.id, 'movie') ? "In Watchlist" : "Add to Watchlist"}
 									</Button>
 								</div>
 								<div className="flex flex-wrap items-center gap-4 text-sm text-white/60 mb-6">

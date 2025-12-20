@@ -62,7 +62,7 @@ export default function PersonPage() {
 				]);
 
 				setPerson(detailsData);
-				document.title = `${detailsData.name} - Watchmen`;
+				document.title = `${detailsData.name} - DEMETR`;
 
 				// Process credits: deduplicate and sort by popularity/date
 				// We'll focus on CAST for acting, or CREW if they are a director

@@ -10,8 +10,9 @@ import { Outfit } from 'next/font/google'
 
 const outfit = Outfit({ subsets: ['latin'] })
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
-	title: 'Watchmen',
+	title: 'DEMETR',
 	description: 'Watch movies for free with friends',
 }
 
