@@ -47,7 +47,7 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
 
     return (
         <>
-            <div className={`fixed top-0 w-full z-50 transition-all duration-300 pointer-events-none`}>
+            <div className={`fixed top-0 w-full z-[100] transition-all duration-300 pointer-events-none`}>
                 <div
                     className={`relative flex items-center px-6 py-3 pointer-events-auto transition-all duration-300
 						${isScrolled
