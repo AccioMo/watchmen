@@ -13,6 +13,7 @@ import {
 	getMovieVideos,
 	searchMovie,
 } from "../../../API/TMDB";
+import { getOMDBRatings, OMDBRatings } from "../../../API/OMDBActions";
 import { getTasteDiveRecommendations } from "../../../API/TasteDive";
 import { useWatchlist } from "../../../context/WatchlistContext";
 
@@ -22,6 +23,7 @@ import CastList from "../../../Components/CastList";
 import BehindTheScenes from "../../../Components/BehindTheScenes";
 import TrailerModal from "../../../Components/TrailerModal";
 import Image from "next/image";
+import RatingCard from "../../../Components/RatingCard";
 
 
 
@@ -70,6 +72,7 @@ export default function MoviePage() {
 	const [recSource, setRecSource] = useState<'TMDB' | 'TasteDive'>('TMDB');
 	const [tasteDiveMovies, setTasteDiveMovies] = useState<Movie[]>([]);
 	const [isLoadingTasteDive, setIsLoadingTasteDive] = useState(false);
+	const [externalRatings, setExternalRatings] = useState<OMDBRatings | null>(null);
 
 
 
@@ -103,11 +106,12 @@ export default function MoviePage() {
 				if (!movieData) throw new Error('Movie not found');
 				setMovie(movieData);
 
-				const [creditsData, similarData, reviewsData, videosData] = await Promise.all([
+				const [creditsData, similarData, reviewsData, videosData, omdbData] = await Promise.all([
 					getMovieCredits(movieData.id),
 					getSimilarMovies(movieData.id),
 					getMovieReviews(movieData.id),
-					getMovieVideos(movieData.id)
+					getMovieVideos(movieData.id),
+					movieData.imdb_id ? getOMDBRatings(movieData.imdb_id) : Promise.resolve(null)
 				]);
 
 				setCast(creditsData.cast?.slice(0, 15) || []);
@@ -119,6 +123,8 @@ export default function MoviePage() {
 
 				const trailer = videosData.results?.find((v: { type: string; site: string; key: string }) => v.type === "Trailer" && v.site === "YouTube");
 				setTrailerKey(trailer?.key || null);
+
+				setExternalRatings(omdbData);
 
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'An error occurred');
@@ -206,15 +212,40 @@ export default function MoviePage() {
 						{/* Badges */}
 						<div className="flex flex-wrap items-center gap-3">
 							{movie.status === 'Released' && (
-								<span className="bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+								<span className="bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider backdrop-blur-md">
 									Now Streaming
 								</span>
 							)}
-							<div className="flex items-center gap-1 bg-[#deb522]/20 text-[#deb522] border border-[#deb522]/30 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md">
-								<span>★</span>
-								<span>{movie.vote_average.toFixed(1)}</span>
-							</div>
-							<span className="text-white/60 text-sm font-medium">{formatRuntime(movie.runtime)}</span>
+
+							<RatingCard
+								type="TMDB"
+								value={`${(movie.vote_average * 10).toFixed(0)}%`}
+								link={`https://www.themoviedb.org/movie/${movie.id}`}
+							/>
+
+							{externalRatings?.imdb && (
+								<RatingCard
+									type="IMDb"
+									value={externalRatings.imdb}
+									link={`https://www.imdb.com/title/${movie.imdb_id}`}
+								/>
+							)}
+							{externalRatings?.rottenTomatoes && (
+								<RatingCard
+									type="RottenTomatoes"
+									value={externalRatings.rottenTomatoes}
+									link={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.title)}`}
+								/>
+							)}
+							{externalRatings?.metacritic && (
+								<RatingCard
+									type="Metacritic"
+									value={externalRatings.metacritic}
+									link={`https://www.metacritic.com/search/${encodeURIComponent(movie.title)}`}
+								/>
+							)}
+
+							<span className="text-white/60 text-sm font-medium ml-2">{formatRuntime(movie.runtime)}</span>
 							<span className="text-white/40">•</span>
 							<span className="text-white/60 text-sm font-medium">{new Date(movie.release_date).getFullYear()}</span>
 						</div>

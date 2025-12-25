@@ -1,18 +1,18 @@
 services:
-  Watchmen:
-    image: Watchmen:latest
-    container_name: Watchmen
+  DEMETR:
+    image: DEMETR:latest
+    container_name: DEMETR
     build:
       context: .
       target: dev
     ports:
       - "443:4000"
     networks:
-      - Watchmen_network
+      - DEMETR_network
     volumes:
       - .:/app
       - /app/node_modules
 
 networks:
-  Watchmen_network:
+  DEMETR_network:
     driver: bridge

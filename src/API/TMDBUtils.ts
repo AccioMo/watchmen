@@ -34,6 +34,7 @@ export interface MovieDetails extends Movie {
     revenue: number;
     tagline: string;
     status: string;
+    imdb_id: string;
 }
 
 export interface TVShow {

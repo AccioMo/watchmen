@@ -14,6 +14,9 @@ const outfit = Outfit({ subsets: ['latin'] })
 export const metadata: Metadata = {
 	title: 'DEMETR',
 	description: 'Watch movies for free with friends',
+	icons: {
+		icon: '/demetr.ico',
+	},
 }
 
 export default function RootLayout({

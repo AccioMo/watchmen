@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
 
 	// Variant styles
 	const variantStyles = {
-		primary: 'bg-white text-black hover:bg-neutral-200 shadow-lg hover:shadow-xl hover:scale-105 focus:ring-white/50',
+		primary: 'bg-white text-black hover:bg-neutral-200 shadow-lg hover:shadow-xl focus:ring-white/50',
 		secondary: 'bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30 focus:ring-white/50',
 		ghost: 'bg-transparent text-white/80 hover:text-white hover:bg-white/10 focus:ring-white/30',
 		danger: 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl focus:ring-red-500',
