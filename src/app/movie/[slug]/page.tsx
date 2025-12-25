@@ -211,11 +211,6 @@ export default function MoviePage() {
 					<div className="max-w-4xl space-y-6 animate-fade-in-up">
 						{/* Badges */}
 						<div className="flex flex-wrap items-center gap-3">
-							{movie.status === 'Released' && (
-								<span className="bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider backdrop-blur-md">
-									Now Streaming
-								</span>
-							)}
 
 							<RatingCard
 								type="TMDB"

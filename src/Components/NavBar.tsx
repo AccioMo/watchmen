@@ -62,8 +62,9 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`text-base text-white font-medium transition-colors duration-200 outline-none border-none hover:border-none focus:outline-none decoration-0 no-underline
-									${link.label === 'DEMETR' ? 'text-xl font-sans font-extrabold tracking-[-0.01rem] text-white mr-3' : ''}
+                                className={`text-base font-medium transition-colors duration-200 outline-none border-none hover:border-none focus:outline-none decoration-0 no-underline
+									${link.label === 'DEMETR' ? 'text-xl font-sans font-extrabold tracking-[-0.05rem] text-white mr-3' : ''}
+									${pathname === link.href ? 'text-white' : 'text-white/60 hover:text-white'}
 								`}
                             >
                                 {link.label}
