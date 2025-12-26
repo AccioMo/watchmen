@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@next/font": "^14.2.15",
+		"@vercel/analytics": "^1.6.1",
 		"axios": "^1.7.2",
 		"embla-carousel": "^8.1.7",
 		"embla-carousel-auto-scroll": "^8.3.0",

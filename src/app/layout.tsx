@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import NavBar from "../Components/NavBar";
+import { Analytics } from "@vercel/analytics/next"
+
 
 import Footer from "../Components/Footer";
 import { WatchlistProvider } from "../context/WatchlistContext";
@@ -34,6 +36,7 @@ export default function RootLayout({
 						<Footer />
 					</div>
 				</WatchlistProvider>
+				<Analytics />
 			</body>
 		</html>
 	);
