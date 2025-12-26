@@ -101,7 +101,7 @@ export default function WatchlistPage() {
                                         <LazyImage
                                             src={item.poster_path ? getImageURL(item.poster_path, 'mid') : ''}
                                             placeholderSrc={item.poster_path ? getImageURL(item.poster_path, 'tiny') : ''}
-                                            alt={title}
+                                            alt={title || "Movie poster"}
                                             fill
                                             className="object-cover"
                                             sizes="(min-width: 768px) 100px, 64px"
@@ -118,7 +118,7 @@ export default function WatchlistPage() {
                                     <div className="flex items-center gap-2 text-sm text-white/60">
                                         <span>{date ? new Date(date).getFullYear() : 'N/A'}</span>
                                         <span>•</span>
-                                        <span className="text-yellow-500">★ {item.vote_average.toFixed(1)}</span>
+                                        <span className="text-yellow-500">★ {item.vote_average !== undefined ? item.vote_average.toFixed(1) : 'N/A'}</span>
                                     </div>
                                     <p className="text-white/40 text-sm mt-2 line-clamp-2 hidden md:block">
                                         {item.overview}

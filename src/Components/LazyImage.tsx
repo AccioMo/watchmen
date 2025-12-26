@@ -33,7 +33,7 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, placeholderSrc, className = 
             {/* Low Quality Placeholder - always visible initially if provided */}
             {placeholderSrc && !isLoaded && (
                 <img
-                    alt={alt}
+                    alt={alt || "Placeholder"}
                     src={placeholderSrc}
                     className="absolute inset-0 w-full h-full object-cover"
                 />
@@ -45,11 +45,11 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, placeholderSrc, className = 
             )}
 
             {/* High Quality Image - loads when in view */}
-            {shouldLoad && (
+            {src && shouldLoad && (
                 <Image
                     {...props}
                     src={src}
-                    alt={alt}
+                    alt={alt || "Image"}
                     className={`object-cover ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                     onLoad={() => setIsLoaded(true)}
                 />

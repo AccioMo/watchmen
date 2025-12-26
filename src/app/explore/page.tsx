@@ -110,22 +110,52 @@ export default function ExplorePage() {
 		{ label: "Critical Acclaim", value: "vote_average.desc" },
 	];
 
+
+	// Mobile Filters Toggle
+	const [showMobileFilters, setShowMobileFilters] = useState(false);
+
 	return (
 		<div className="h-screen bg-black text-white font-sans selection:bg-white/20 overflow-hidden flex flex-col">
 
 			{/* Main Content Area - Fixed Height (Screen - Navbar) */}
-			<div className="flex-1 flex pt-20 overflow-hidden">
+			<div className="flex-1 flex pt-20 overflow-hidden relative">
 
-				{/* Fixed Discovery Section (Sidebar) */}
-				<aside className="w-[320px] md:w-[400px] flex-shrink-0 bg-black/50 border-r border-white/5 px-8 overflow-y-auto no-scrollbar z-20">
-					<header className="mb-5">
-						<h1 className="text-2xl font-bold mb-1 tracking-tighter">beep boop</h1>
-					</header>
+				{/* Mobile Filter Toggle Button */}
+				<button
+					onClick={() => setShowMobileFilters(true)}
+					className="md:hidden absolute bottom-6 right-6 z-50 bg-white text-black font-bold py-3 px-6 rounded-full shadow-lg flex items-center gap-2"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+						<path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
+					</svg>
+					Filters
+				</button>
 
-					<div className="space-y-10">
-						{/* Sort Dropdown moved here for "Control Panel" feel, or could be kept on right. 
-                             User asked for "Explore discovery section remains fixed". 
-                             Putting Sort here makes sense for a centralized control area. */}
+				{/* Sidebar (Discovery Section) 
+                    - Mobile: Fixed full screen, hidden unless toggled
+                    - Desktop: Static sidebar
+                */}
+				<aside className={`
+                    fixed inset-0 z-40 bg-black md:bg-black/50 md:static md:w-[400px] md:flex-shrink-0 border-r border-white/5 px-8 pt-20 md:pt-0 overflow-y-auto no-scrollbar transition-transform duration-300
+                    ${showMobileFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+                `}>
+					<div className="flex justify-between items-center mb-5 md:mt-0">
+						<header>
+							<h1 className="text-2xl font-bold tracking-tighter">beep boop</h1>
+						</header>
+						{/* Close Button (Mobile Only) */}
+						<button
+							onClick={() => setShowMobileFilters(false)}
+							className="md:hidden text-white/60 hover:text-white"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</button>
+					</div>
+
+					<div className="space-y-10 pb-20 md:pb-0">
+						{/* Sort Dropdown  */}
 						<div className="pb-8 border-b border-white/5">
 							<Dropdown
 								label="Sort By"
@@ -188,11 +218,19 @@ export default function ExplorePage() {
 								))}
 							</div>
 						</div>
+
+						{/* Apply Button (Mobile Only convenience) */}
+						<button
+							onClick={() => setShowMobileFilters(false)}
+							className="md:hidden w-full bg-white text-black font-bold py-3 rounded-xl mt-8"
+						>
+							Apply Filters
+						</button>
 					</div>
 				</aside>
 
 				{/* Scrollable Movie Grid Area */}
-				<main className="flex-1 overflow-y-auto bg-black scroll-smooth custom-scrollbar">
+				<main className="flex-1 overflow-y-auto bg-black scroll-smooth custom-scrollbar w-full">
 					<InfiniteMovieGrid
 						movies={movies}
 						mode="grid"

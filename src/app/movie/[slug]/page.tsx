@@ -185,26 +185,39 @@ export default function MoviePage() {
 		);
 	}
 
+	const backdropUrl = movie.backdrop_path ? getImageURL(movie.backdrop_path, 'max') : '';
+	const posterUrl = movie.poster_path ? getImageURL(movie.poster_path, 'mid') : '';
+
 	return (
 		<div className="min-h-screen bg-[#0d0d0d] text-white selection:bg-purple-500/30">
 
 			{/* HERO SECTION */}
 			<div className="relative h-screen w-full overflow-hidden">
-				{/* Backdrop */}
-				{movie.backdrop_path && (
-					<>
+				{/* Background Image - Mobile (Poster) */}
+				{posterUrl && (
+					<div className="absolute inset-0 block md:hidden">
 						<Image
-							src={getImageURL(movie.backdrop_path, 'max')}
+							src={posterUrl}
 							alt={movie.title}
 							fill
-							className="object-cover"
-							priority
+							className="object-cover opacity-50 pointer-events-none"
 						/>
-						{/* Overlays */}
-						<div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/40 to-transparent"></div>
-						<div className="absolute inset-0 bg-gradient-to-r from-[#0d0d0d]/90 via-[#0d0d0d]/30 to-transparent"></div>
-						<div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#0d0d0d_120%)] opacity-80"></div>
-					</>
+						<div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-black/50 to-transparent"></div>
+					</div>
+				)}
+
+				{/* Background Image - Desktop (Backdrop) */}
+				{backdropUrl && (
+					<div className="absolute inset-0 hidden md:block">
+						<Image
+							src={backdropUrl}
+							alt={movie.title}
+							fill
+							className="object-cover opacity-60 pointer-events-none"
+						/>
+						<div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-black/40 to-transparent"></div>
+						<div className="absolute inset-0 bg-gradient-to-r from-[#0d0d0d] via-transparent to-transparent"></div>
+					</div>
 				)}
 
 				<div className="relative z-10 flex flex-col justify-end h-full pb-20 container mx-auto px-6 md:px-12">
@@ -246,7 +259,7 @@ export default function MoviePage() {
 						</div>
 
 						{/* Title */}
-						<h1 className={`${movie.title.length > 40 ? 'text-3xl md:text-5xl lg:text-6xl' : movie.title.length > 20 ? 'text-4xl md:text-6xl lg:text-7xl' : 'text-5xl md:text-7xl lg:text-8xl'} font-black tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-br from-white via-white/90 to-white/50 drop-shadow-2xl`}>
+						<h1 className={`${movie.title.length > 40 ? 'text-2xl md:text-5xl lg:text-6xl' : movie.title.length > 20 ? 'text-3xl md:text-6xl lg:text-7xl' : 'text-4xl md:text-7xl lg:text-8xl'} font-black tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-br from-white via-white/90 to-white/50 drop-shadow-2xl`}>
 							{movie.title}
 						</h1>
 
@@ -263,29 +276,16 @@ export default function MoviePage() {
 						</p>
 
 						{/* Actions */}
-						<div className="flex flex-wrap items-center gap-4 pt-4">
-							{trailerKey && (
-								<Button
-									onClick={() => setShowTrailer(true)}
-									variant="primary"
-									size="lg"
-									className="shadow-[0_0_30px_-5px_theme(colors.white)] hover:shadow-[0_0_40px_-5px_theme(colors.white)] transition-shadow duration-300"
-									icon={
-										<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-										</svg>
-									}
-								>
-									Watch Trailer
-								</Button>
-							)}
+						{/* Actions */}
+						<div className="flex flex-col md:flex-row items-center gap-4 pt-4 w-full md:w-auto">
+							{/* Primary Action (Top on Mobile) */}
 							<Button
 								onClick={() => {
 									router.push(`/movie/watch/${movie.id}`);
 								}}
-								variant="secondary"
+								variant="primary"
 								size="lg"
+								className="w-full md:w-auto justify-center"
 								icon={
 									<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
 										<path d="M8 5v14l11-7z" />
@@ -294,40 +294,58 @@ export default function MoviePage() {
 							>
 								Watch Now
 							</Button>
-							<Button
-								variant={isInWatchlist(movie.id, 'movie') ? "primary" : "ghost"}
-								size="lg"
-								onClick={() => {
-									if (isInWatchlist(movie.id, 'movie')) {
-										removeFromWatchlist(movie.id, 'movie');
-									} else {
-										// We need to map MovieDetails to Movie or use a subset.
-										// The context expects Movie (from API/TMDB), which matches reasonably well.
-										// We might need to ensure properties match or cast.
-										addToWatchlist(movie as unknown as Movie, 'movie');
+
+							{/* Secondary Actions (Row on Mobile) */}
+							<div className="flex w-full md:w-auto gap-4">
+								{trailerKey && (
+									<Button
+										onClick={() => setShowTrailer(true)}
+										variant="secondary"
+										size="lg"
+										className="flex-grow md:flex-none justify-center transition-all duration-300"
+										icon={
+											<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+											</svg>
+										}
+									>
+										Trailer
+									</Button>
+								)}
+								<Button
+									variant={isInWatchlist(movie.id, 'movie') ? "primary" : "ghost"}
+									size="lg"
+									className="flex-none !w-16 !h-16 md:w-auto border !p-0 border-white/10"
+									onClick={() => {
+										if (isInWatchlist(movie.id, 'movie')) {
+											removeFromWatchlist(movie.id, 'movie');
+										} else {
+											addToWatchlist(movie as unknown as Movie, 'movie');
+										}
+									}}
+									icon={
+										isInWatchlist(movie.id, 'movie') ? (
+											<svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+											</svg>
+										) : (
+											<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+											</svg>
+										)
 									}
-								}}
-								icon={
-									isInWatchlist(movie.id, 'movie') ? (
-										<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-											<path d="M5 13l4 4L19 7" />
-										</svg>
-									) : (
-										<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-										</svg>
-									)
-								}
-							>
-								{isInWatchlist(movie.id, 'movie') ? "In Watchlist" : "Watchlist"}
-							</Button>
+								>
+									<div className="hidden md:block">{isInWatchlist(movie.id, 'movie') ? 'In Watchlist' : 'Add to Watchlist'}</div>
+								</Button>
+							</div>
 						</div>
 					</div >
 				</div >
 			</div >
 
 			{/* CONTENT CONTAINER */}
-			< div className="relative z-20 bg-[#0d0d0d] pt-12" >
+			<div className="relative z-20 bg-[#0d0d0d] pt-12">
 
 				{/* CAST SECTION */}
 				<section className="container mx-auto px-6 md:px-12">
@@ -391,9 +409,9 @@ export default function MoviePage() {
 								<span className="w-1 h-8 bg-yellow-500 rounded-full"></span>
 								User Reviews
 							</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div className="flex md:grid md:grid-cols-2 gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x no-scrollbar">
 								{reviews.map((review) => (
-									<div key={review.id} className="bg-white/5 hover:bg-white/10 p-6 rounded-2xl border border-white/5 transition-colors cursor-pointer" onClick={() => router.push(`/review/${review.id}`)}>
+									<div key={review.id} className="min-w-[85vw] md:min-w-0 snap-center bg-white/5 hover:bg-white/10 p-6 rounded-2xl border border-white/5 transition-colors cursor-pointer" onClick={() => router.push(`/review/${review.id}`)}>
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
 												<div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center font-bold text-white">
@@ -454,30 +472,34 @@ export default function MoviePage() {
 								</div>
 							</div>
 
-							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+							<div className="flex md:grid md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 overflow-x-auto md:overflow-visible pb-8 md:pb-0 snap-x no-scrollbar">
 								{recSource === 'TMDB' ? (
 									similarMovies.map((movie) => (
-										<InteractiveMovieBox
-											key={movie.id}
-											movie={movie}
-											className="w-full aspect-[2/3] rounded-xl"
-										/>
+										<div key={movie.id} className="min-w-[40vw] sm:min-w-[30vw] md:min-w-0 snap-center">
+											<InteractiveMovieBox
+												movie={movie}
+												className="w-full aspect-[2/3] rounded-xl"
+											/>
+										</div>
 									))
 								) : isLoadingTasteDive ? (
 									// Loading skeletons for TasteDive
 									[...Array(5)].map((_, i) => (
-										<div key={i} className="w-full aspect-[2/3] bg-white/5 rounded-xl animate-pulse"></div>
+										<div key={i} className="min-w-[40vw] sm:min-w-[30vw] md:min-w-0 snap-center">
+											<div className="w-full aspect-[2/3] bg-white/5 rounded-xl animate-pulse"></div>
+										</div>
 									))
 								) : tasteDiveMovies.length > 0 ? (
 									tasteDiveMovies.map((movie) => (
-										<InteractiveMovieBox
-											key={movie.id}
-											movie={movie}
-											className="w-full aspect-[2/3] rounded-xl"
-										/>
+										<div key={movie.id} className="min-w-[40vw] sm:min-w-[30vw] md:min-w-0 snap-center">
+											<InteractiveMovieBox
+												movie={movie}
+												className="w-full aspect-[2/3] rounded-xl"
+											/>
+										</div>
 									))
 								) : (
-									<div className="col-span-full py-10 text-center text-white/40">
+									<div className="col-span-full py-10 text-center text-white/40 w-full">
 										No recommendations found from TasteDive.
 									</div>
 								)}

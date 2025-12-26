@@ -10,6 +10,7 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
     const pathname = usePathname();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navLinks = [
         { label: 'DEMETR', href: '/' },
@@ -50,20 +51,37 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
             <div className={`fixed top-0 w-full z-[100] transition-all duration-300 pointer-events-none`}>
                 <div
                     className={`relative flex items-center px-6 py-3 pointer-events-auto transition-all duration-300
-						${isScrolled
+						${isScrolled || isMobileMenuOpen
                             ? 'bg-black/80 backdrop-blur-md border-b border-white/10'
                             : 'bg-gradient-to-b from-black/80 to-transparent border-none border-transparent'
                         }
 					`}
                 >
-                    {/* Navigation Links */}
-                    <nav className="flex items-center gap-6">
+                    {/* Hamburger Menu (Mobile) */}
+                    <button
+                        className="md:hidden text-white mr-4 focus:outline-none"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? (
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        ) : (
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        )}
+                    </button>
+
+                    {/* Logo */}
+                    <Link href="/" className="text-xl font-sans font-extrabold tracking-[-0.05rem] text-white mr-6">
+                        DEMETR
+                    </Link>
+
+                    {/* Desktop Navigation Links */}
+                    <nav className="hidden md:flex items-center gap-6">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`text-base font-medium transition-colors duration-200 outline-none border-none hover:border-none focus:outline-none decoration-0 no-underline
-									${link.label === 'DEMETR' ? 'text-xl font-sans font-extrabold tracking-[-0.05rem] text-white mr-3' : ''}
+                                className={`text-base font-medium transition-colors duration-200 outline-none border-none focus:outline-none decoration-0 no-underline
+									${link.label === 'DEMETR' ? 'hidden' : ''}
 									${pathname === link.href ? 'text-white' : 'text-white/60 hover:text-white'}
 								`}
                             >
@@ -103,6 +121,22 @@ const NavBar: React.FC<{ fixed?: boolean }> = () => {
                             </svg>
                         </Link>
                     </div>
+                </div>
+
+                {/* Mobile Menu Overlay */}
+                <div className={`md:hidden fixed inset-0 bg-black/80 backdrop-blur-xl z-[-1] pt-20 px-6 transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+                    <nav className="flex flex-col gap-6 text-xl font-medium pointer-events-auto">
+                        {navLinks.filter(l => l.label !== 'DEMETR').map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className={`block py-2 border-b border-white/10 ${pathname === link.href ? 'text-white' : 'text-white/60'}`}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </nav>
                 </div>
             </div>
 

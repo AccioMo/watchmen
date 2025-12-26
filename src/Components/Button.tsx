@@ -73,10 +73,10 @@ const Button: React.FC<ButtonProps> = ({
 			{loading ? (
 				<LoadingSpinner />
 			) : (
-				icon && iconPosition === 'left' && <span>{icon}</span>
+				icon && iconPosition === 'left' && icon
 			)}
-			<span>{children}</span>
-			{!loading && icon && iconPosition === 'right' && <span>{icon}</span>}
+			{children}
+			{!loading && icon && iconPosition === 'right' && icon}
 		</button>
 	);
 };

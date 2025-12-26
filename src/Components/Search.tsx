@@ -187,7 +187,7 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 													opacity: 0
 												}}
 											>
-												<div className="relative w-12 h-16 flex-shrink-0 rounded-md overflow-hidden bg-white/5 shadow-lg group-hover:scale-105 transition-transform duration-300">
+												<div className="relative w-12 h-16 flex-shrink-0 rounded-md overflow-hidden bg-white/5 shadow-lg transition-transform duration-300">
 													{posterUrl ? (
 														<Image
 															src={posterUrl}
@@ -261,9 +261,6 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 				.custom-scrollbar::-webkit-scrollbar-thumb {
 					background: rgba(255, 255, 255, 0.1);
 					border-radius: 10px;
-				}
-				.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-					background: rgba(255, 255, 255, 0.2);
 				}
 			`}</style>
 		</div>

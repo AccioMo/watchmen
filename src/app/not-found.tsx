@@ -3,7 +3,7 @@ import Button from '../Components/Button';
 
 export default function NotFound() {
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg flex items-center justify-center px-4">
+		<div className="min-h-screen bg-primary animated-bg flex items-center justify-center px-4">
 			<div className="text-center max-w-md">
 				<div className="mb-8">
 					<h1 className="text-9xl font-bold text-white/20 mb-4">404</h1>

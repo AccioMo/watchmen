@@ -31,7 +31,7 @@ const PageTemplate: React.FC<Props> = ({ genres, fetchStrategy, title }) => {
 			<div className="fixed inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none z-10"></div>
 
 			{/* Main Content */}
-			<div className="w-full pt-0">
+			<div className="w-full">
 				<InfiniteMovieGrid genre={mainGenre} fetchStrategy={fetchStrategy} />
 			</div>
 

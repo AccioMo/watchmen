@@ -1,7 +1,7 @@
 
 export default function Loading() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg">
+        <div className="min-h-screen bg-primary animated-bg">
             <div className="pt-32 flex items-center justify-center min-h-[60vh]">
                 <div className="glass-card glass-border p-8 rounded-2xl">
                     <div className="animate-pulse flex space-x-4">

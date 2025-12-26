@@ -1,6 +1,6 @@
 export default function Loading() {
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-accent animated-bg flex items-center justify-center">
+		<div className="min-h-screen bg-primary animated-bg flex items-center justify-center">
 			<div className="text-center">
 				<div className="relative w-24 h-24 mx-auto mb-8">
 					<div className="absolute inset-0 border-4 border-purple-500/30 rounded-full"></div>
