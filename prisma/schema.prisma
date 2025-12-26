@@ -1,0 +1,20 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Movie {
+  id                String @id @default(cuid())
+  tmdb_id           Int    @unique
+  imdb_id           String @unique
+  tmdb_rating       Float?
+  imdb_rating       Float?
+  rt_rating         Float?
+  metacritic_rating Float?
+}
