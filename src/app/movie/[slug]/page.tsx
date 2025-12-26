@@ -316,7 +316,7 @@ export default function MoviePage() {
 								<Button
 									variant={isInWatchlist(movie.id, 'movie') ? "primary" : "ghost"}
 									size="lg"
-									className="flex-none !w-16 !h-16 md:w-auto border !p-0 border-white/10"
+									className="flex-none !w-16 !h-16 md:!w-auto md:!h-auto border !px-0 md:!px-8 border-white/10"
 									onClick={() => {
 										if (isInWatchlist(movie.id, 'movie')) {
 											removeFromWatchlist(movie.id, 'movie');
