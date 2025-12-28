@@ -1,5 +1,7 @@
 "use server";
 
+import { updateMovieRatings } from "../lib/services/movieService";
+
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const BASE_URL = "http://www.omdbapi.com/";
 
@@ -45,6 +47,17 @@ export const getOMDBRatings = async (imdbId: string): Promise<OMDBRatings> => {
                 ratings.rottenTomatoes = rt.Value;
             }
         }
+
+        // Parse and cache ratings
+        const parsedRatings = {
+            imdb_rating: ratings.imdb ? parseFloat(ratings.imdb) : undefined,
+            // Parse "92%" to 92
+            rt_rating: ratings.rottenTomatoes ? parseInt(ratings.rottenTomatoes) : undefined,
+            metacritic_rating: ratings.metacritic ? parseFloat(ratings.metacritic) : undefined
+        };
+
+        // Fire and forget
+        updateMovieRatings(imdbId, parsedRatings).catch(err => console.error("Failed to update movie ratings:", err));
 
         return ratings;
     } catch (error) {

@@ -2,6 +2,8 @@
 
 import { Movie, MovieDetails, TVShow, TVShowDetails, getGenreIdByName } from "./TMDBUtils";
 
+import { upsertMovie } from "../lib/services/movieService";
+
 const TMDB_ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN
 const BASE_URL = "https://api.themoviedb.org/3/";
 
@@ -94,7 +96,18 @@ export const getTMDBMoviesByGenre = async (
  */
 export const getMovieById = async (movieId: number | string): Promise<MovieDetails | null> => {
     if (!movieId) return null;
-    return fetchTMDB(`movie/${movieId}`, { language: "en-US" });
+    const data = await fetchTMDB(`movie/${movieId}`, { language: "en-US" });
+
+    if (data) {
+        // Fire and forget upsert to not block the response
+        upsertMovie({
+            tmdb_id: data.id,
+            imdb_id: data.imdb_id,
+            tmdb_rating: data.vote_average
+        }).catch(err => console.error("Failed to cache movie:", err));
+    }
+
+    return data;
 };
 
 export const getMovieReviews = async (movieId: number | string) => {
